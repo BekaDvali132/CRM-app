@@ -5,10 +5,12 @@ const {
   setClinic,
   updateClinic,
   deleteClinic,
-} = require("../controller/clinicController");
+} = require("../controllers/clinicController");
 
-router.route("/").get(getClinics).post(setClinic);
+const {protect} = require('../middleware/authMiddleware')
 
-router.route("/:id").put(updateClinic).delete(deleteClinic);
+router.route("/").get(protect, getClinics).post(protect, setClinic);
+
+router.route("/:id").put(protect, updateClinic).delete(protect, deleteClinic);
 
 module.exports = router;
