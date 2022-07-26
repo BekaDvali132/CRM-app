@@ -1,0 +1,12 @@
+.login{
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    max-width: 500px;
+    margin: auto;
+    align-items: center;
+    padding: 32px;
+}
+form{
+    width: 100%;
+}
