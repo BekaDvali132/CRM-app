@@ -2,38 +2,52 @@ const mongoose = require("mongoose");
 
 const clinicSchema = mongoose.Schema(
   {
-    // identity_code:{
-    //   type: String,
-    //   required: [true, 'გთხოვთ მიუთითოთ საიდენტიფიკაციო კოდი']
-    // },
-    // phone_number:{
-    //   type: String,
-    //   required: [true, 'გთხოვთ მიუთითოთ ტელეფონის ნომერი']
-    // },
-    // clinic_name:{
-    //   type: String,
-    //   required: [true, 'გთხოვთ მიუთითოთ კლინიკის დასახელება']
-    // },
-    // contact_person:{
-    //   type: String,
-    //   required: [true, 'გთხოვთ მიუთითოთ საკონტაქტო პირი']
-    // },
-    // contact_person_number:{
-    //   type: String,
-    //   required: [true, 'გთხოვთ მიუთითოთ საკონტაქტო პირის ტელეფონის ნომერი']
-    // },
-    // contact_person_email: {
-    //   type: String,
-    //   required: [true, "გთხოვთ მიუთითოთ საკონტაქტო პირის ელ.ფოსტა"],
-    // },
+    identity_code:{
+      type: String,
+      required: [false, 'გთხოვთ მიუთითოთ საიდენტიფიკაციო კოდი']
+    },
+    phone_number:{
+      type: String,
+      required: [true, 'გთხოვთ მიუთითოთ ტელეფონის ნომერი']
+    },
+    name:{
+      type: String,
+      required: [true, 'გთხოვთ მიუთითოთ კლინიკის დასახელება']
+    },
+    contact_person:{
+      phone_number:{
+        type:String,
+        required: [false,'გთხოვთ მიუთითოთ საკონტაქტო პირის ტელეფონის ნომერი']
+      },
+      email: {
+        type: String,
+        required: [false, "გთხოვთ მიუთითოთ საკონტაქტო პირის ელ.ფოსტა"],
+      },
+      position: {
+        type: String,
+        required: [false, "გთხოვთ მიუთითოთ საკონტაქტო პირის პოზიცია"],
+      },
+    },
+    status:{
+      type: String,
+      required: [true, "გთხოვთ მიუთითოთ სტატუსი"],
+    },
+    register_date:{
+      type: String,
+      required: [true, "გთხოვთ მიუთითოთ რეგისტრაციის თარიღი"],
+    },
+    contract_date:{
+      type: String,
+      required: [true, "გთხოვთ მიუთითოთ კონტრაქტის თარიღი"],
+    },
     manager:{
       type: mongoose.Schema.Types.ObjectId,
       required: true,
       ref: 'User'
     },
-    text:{
+    comment:{
       type: String,
-      required: [true, "გთხოვთ მიუთითოთ ტექსტი"],
+      required: [false, "გთხოვთ მიუთითოთ კომენტარი"],
     }
   },
   {

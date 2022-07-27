@@ -2,6 +2,7 @@ const asyncHandler = require("express-async-handler");
 
 const Clinic = require("../models/clinicModel");
 const User = require("../models/userModel");
+const { body, validationResult } = require('express-validator');
 
 //@desc     Get Clinics
 //@route    GET /api/clinics
@@ -20,17 +21,46 @@ const getClinics = asyncHandler(async (req, res) => {
 //@desc     Set Clinic
 //@route    POST /api/clinics
 //access    Private
-const setClinic = asyncHandler(async (req, res) => {
-  if (!req.body.text) {
-    res.status(400).json({
+const setClinic = asyncHandler( async (req, res) => {
+
+  const { identity_code, phone_number, name, contact_person, status, register_date, contract_date, comment, manager } = req.body;
+
+
+  const errors = {};
+
+  // Check if something is missing
+  if (!phone_number) {
+    errors.phone_number = "გთხოვთ მიუთითოთ ტელეფონის ნომერი";
+  }
+  if (!name) {
+    errors.name = "გთხოვთ მიუთითოთ სახელი";
+  }
+  if (!status) {
+    errors.status = "გთხოვთ მიუთითოთ სტატუსი";
+  }
+  if (!register_date) {
+    errors.register_date = "გთხოვთ მიუთითოთ რეგისტრაციის თარიღი";
+  }
+  if (!manager) {
+    errors.manager = "გთხოვთ მიუთითოთ მენეჯერი";
+  }
+  if (!contract_date) {
+    errors.contract_date = "გთხოვთ მიუთითოთ კონტრაქტის თარიღი";
+  }
+
+
+  if (Object.keys(errors).length > 0) {
+    res.json({
       status: "unsuccess",
-      message: "გთხოვთ დაამატოთ ტექსტური ველი",
+      errors: errors,
     });
+    return;
   }
 
   const clinic = await Clinic.create({
     text: req.body.text,
-    manager: req.user.id
+    manager: req.user.id,
+    contact_person
   });
   res.status(200).json({
     status: "success",

@@ -17,7 +17,7 @@ import "./UserRoute.css";
 const { Header, Sider, Content } = Layout;
 
 const UserRoute = () => {
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
   const navigate = useNavigate();
   const user = useContext(UserContext);
 
@@ -46,7 +46,7 @@ const UserRoute = () => {
 
   useEffect(() => {
     axios
-      .get("api/users/me", {
+      .get("/api/users/me", {
         headers: {
           authorization:
             "Bearer " + JSON.parse(localStorage.getItem("user"))?.token,
@@ -96,7 +96,7 @@ const UserRoute = () => {
               key: "3",
               icon: <LogoutOutlined />,
               style: {position:"absolute",bottom:'50px',width:'100%'},
-              label: "შეთავაზებები",
+              label: "გასვლა",
               onClick: ()=>logOut()
             }
           ]}
