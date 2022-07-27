@@ -29,14 +29,6 @@
   font-size: 25px;
 }
 
-form {
-  padding: 30px !important;
-  border: 1px solid green;
-  border-radius: 20px;
-  position: relative;
-  bottom: 100px;
-}
-
 h1{
   color: white;
   text-align: center;

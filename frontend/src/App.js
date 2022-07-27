@@ -3,6 +3,8 @@ import Login from "./components/auth/Login";
 import "antd/dist/antd.min.css";
 import UserRoute from "./components/layout/UserRoute";
 import { UserContext } from "./components/hooks/contexts/UserContext";
+import Clinics from "./components/clinics/Clinics";
+import RegisterClinic from "./components/clinics/RegisterClinic";
 
 function App() {
   return (
@@ -13,6 +15,9 @@ function App() {
             <Route path="/login" element={<Login />} />
             {/* <Route path="/" element={  component={Login}/>} /> */}
             <Route path="/" element={<UserRoute />}>
+            <Route path="/clinics" element={<Clinics />}/>
+            <Route path="/clinics/register" element={<RegisterClinic />}/>
+
             </Route>
           </Routes>
         </div>

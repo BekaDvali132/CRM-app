@@ -44,7 +44,7 @@ const Login = () => {
 
   return (
     <div className="login">
-      <Form layout={"vertical"} onFinish={onFinish}>
+      <Form layout={"vertical"} onFinish={onFinish} className={'login-form'}>
         <Form.Item
           label="დასახელება"
           name="name"
@@ -79,7 +79,7 @@ const Login = () => {
         </Form.Item>
         <Form.Item>
           <Button type="primary" htmlType="submit">
-            Submit
+            შესვლა
           </Button>
         </Form.Item>
       </Form>

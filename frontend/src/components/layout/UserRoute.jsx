@@ -1,9 +1,9 @@
 import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
-  UploadOutlined,
-  UserOutlined,
-  VideoCameraOutlined,
+  MedicineBoxOutlined,
+  InfoCircleOutlined,
+  LogoutOutlined
 } from "@ant-design/icons";
 import { Layout, Menu } from "antd";
 import axios from "axios";
@@ -39,19 +39,27 @@ const UserRoute = () => {
     }
   );
 
+  const logOut = () => {
+    localStorage.removeItem('user')
+    navigate('/login')
+  }
+
   useEffect(() => {
-      axios
-        .get("api/users/me", {
-          headers: { authorization: "Bearer " + JSON.parse(localStorage.getItem('user'))?.token },
-        })
-        .then((res) => {
-          if (res?.data?.status === "success") {
-            localStorage.setItem(
-              "user",
-              JSON.stringify({ ...res?.data?.data, token: user.token })
-            );
-          }
-        });
+    axios
+      .get("api/users/me", {
+        headers: {
+          authorization:
+            "Bearer " + JSON.parse(localStorage.getItem("user"))?.token,
+        },
+      })
+      .then((res) => {
+        if (res?.data?.status === "success") {
+          localStorage.setItem(
+            "user",
+            JSON.stringify({ ...res?.data?.data, token: user?.token })
+          );
+        }
+      });
 
     // axios.interceptors.response.use(function (response) {
     //   return response;
@@ -74,19 +82,23 @@ const UserRoute = () => {
           items={[
             {
               key: "1",
-              icon: <UserOutlined />,
-              label: "nav 1",
+              icon: <MedicineBoxOutlined />,
+              label: "კლინიკები",
+              onClick: ()=>navigate('/clinics')
             },
             {
               key: "2",
-              icon: <VideoCameraOutlined />,
-              label: "nav 2",
+              icon: <InfoCircleOutlined />,
+              label: "შეთავაზებები",
+              onClick: ()=>navigate('/clinics')
             },
             {
               key: "3",
-              icon: <UploadOutlined />,
-              label: "nav 3",
-            },
+              icon: <LogoutOutlined />,
+              style: {position:"absolute",bottom:'50px',width:'100%'},
+              label: "შეთავაზებები",
+              onClick: ()=>logOut()
+            }
           ]}
         />
       </Sider>
