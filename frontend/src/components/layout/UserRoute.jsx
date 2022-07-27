@@ -6,19 +6,67 @@ import {
   VideoCameraOutlined,
 } from "@ant-design/icons";
 import { Layout, Menu } from "antd";
+import axios from "axios";
 import React, { useState } from "react";
-import { Outlet, Route } from "react-router-dom";
+import { useEffect } from "react";
+import { useContext } from "react";
+import { Outlet, useNavigate } from "react-router-dom";
+import { UserContext } from "../hooks/contexts/UserContext";
 import "./UserRoute.css";
 
 const { Header, Sider, Content } = Layout;
 
 const UserRoute = () => {
   const [collapsed, setCollapsed] = useState(false);
+  const navigate = useNavigate();
+  const user = useContext(UserContext);
+
+  axios.interceptors.request.use(function (config) {
+    const bearer = user?.token || "";
+
+    config.headers.authorization = "Bearer " + bearer;
+    return config;
+  });
+
+  axios.interceptors.response.use(
+    function (response) {
+      return response;
+    },
+    function (error) {
+      if (error?.response?.status === 401) {
+        navigate("/login");
+      }
+    }
+  );
+
+  useEffect(() => {
+      axios
+        .get("api/users/me", {
+          headers: { authorization: "Bearer " + JSON.parse(localStorage.getItem('user'))?.token },
+        })
+        .then((res) => {
+          if (res?.data?.status === "success") {
+            localStorage.setItem(
+              "user",
+              JSON.stringify({ ...res?.data?.data, token: user.token })
+            );
+          }
+        });
+
+    // axios.interceptors.response.use(function (response) {
+    //   return response;
+    // }, function (error) {
+    //   if (error?.response?.status === 401 || error.response.status === 419) {
+    //     navigate('/login')
+    //   } else return Promise.reject(error);
+    // });
+  }, []);
 
   return (
     <Layout>
       <Sider trigger={null} collapsible collapsed={collapsed}>
         <div className="logo" />
+        <h1>{user?.name}</h1>
         <Menu
           theme="dark"
           mode="inline"

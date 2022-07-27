@@ -27,22 +27,22 @@ const registerUser = asyncHandler(async (req, res) => {
   }
 
   if (Object.keys(errors).length > 0) {
-    res.json({ 
-        status:'unsuccess',
-        errors: errors
-     });
-     return;
+    res.json({
+      status: "unsuccess",
+      errors: errors,
+    });
+    return;
   }
 
   // Check if user exists
   const userExists = await User.findOne({ email });
 
   if (userExists) {
-    res.status(200).json({ 
-        status:'unsuccess',
-        message: "მომხმარებელი უკვე არსებობს"
-     });
-     return;
+    res.status(200).json({
+      status: "unsuccess",
+      message: "მომხმარებელი უკვე არსებობს",
+    });
+    return;
   }
 
   // Hash password
@@ -54,25 +54,25 @@ const registerUser = asyncHandler(async (req, res) => {
     name,
     email,
     password: hashedPassword,
-    role
+    role,
   });
 
   if (user) {
     res.status(201).json({
-        status: 'success',
-        data: {
-            _id: user.id,
-            name: user.name,
-            email: user.email,
-            token: generateToken(user._id)
-        }
-    })
+      status: "success",
+      data: {
+        _id: user.id,
+        name: user.name,
+        email: user.email,
+        token: generateToken(user._id),
+      },
+    });
     return;
   } else {
     res.json({
-        status: 'unsuccess',
-        message: 'მომხმარებლის მონაცემები არასწორია'
-    })
+      status: "unsuccess",
+      message: "მომხმარებლის მონაცემები არასწორია",
+    });
     return;
   }
 });
@@ -81,67 +81,71 @@ const registerUser = asyncHandler(async (req, res) => {
 //@route    POST /api/users/login
 //access    Private
 const loginUser = asyncHandler(async (req, res) => {
-    const {email,password} = req.body;
+  const { name, password } = req.body;
+  const errors = {};
 
-    if (!email){
-      res.json({
-        status:'unsuccess',
-        errors:{
-          email: "გთხოვთ მიუთითოთ ელექტრონული ფოსტა"
-      }
-    })
+  // Check if something is missing
+
+  if (!name) {
+    errors.name = "გთხოვთ მიუთითოთ დასახელება";
+  }
+  if (!password) {
+    errors.password = "გთხოვთ მიუთითოთ პაროლი";
   }
 
-    const user = await User.findOne({email})
+  if (errors?.name || errors?.password) {
+    res.json({
+      status: "unsuccess",
+      errors: errors,
+    });
+  }
 
-    if (!password){
-      res.json({
-        status:'unsuccess',
-        errors:{
-          password: "გთხოვთ მიუთითოთ პაროლი"
-      }
-    })
-    }else if(user && (await bcrypt.compare(password,user.password))){
-        res.json({
-            status:'success',
-            data: {
-              _id: user.id,
-              name: user.name,
-              email: user.email,
-              token: generateToken(user._id)
-            }
-        })
-    }else if (user && !(await bcrypt.compare(password,user.password))){
-        res.json({
-            status:'unsuccess',
-            errors:{
-                password: "პაროლი არასწორია"
-            }
-        })
-    } else {
-      res.json({
-        status:'unsuccess',
-        errors:{
-            alert: "დაფიქსირდა შეცდომა გთხოვთ სცადოთ თავიდან"
-        }
-    })
-    }
+  // Find for user and if found, success
+
+  const user = await User.findOne({ name });
+  
+  if (user && (await bcrypt.compare(password, user.password))) {
+    res.json({
+      status: "success",
+      data: {
+        _id: user.id,
+        name: user.name,
+        email: user.email,
+        token: generateToken(user._id),
+      },
+    });
+  } else if (user && !(await bcrypt.compare(password, user.password))) {
+    res.json({
+      status: "unsuccess",
+      errors: {
+        password: "პაროლი არასწორია",
+      },
+    });
+  } else {
+    res.json({
+      status: "unsuccess",
+      errors: {
+        name: "მომხმარებელი ამ დასახელებით ვერ მოიძებნა",
+      },
+    });
+  }
 });
 
 //@desc     Get user data
 //@route    Get /api/users/me
 //access    Private
 const getMe = asyncHandler(async (req, res) => {
-  const {_id,name,email} = await User.findById(req.user.id)
+  const { _id, name, email } = await User.findById(req.user.id);
 
   res.status(200).json({
-    status:"success",
-    data:{
-      id:_id,
+    status: "success",
+    data: {
+      id: _id,
       name,
       email
-    }
-  })
+    },
+  });
+  
   res.json({
     message: "User data Display",
   });
@@ -151,9 +155,9 @@ const getMe = asyncHandler(async (req, res) => {
 
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
-    expiresIn: '30d'
-  })
-}
+    expiresIn: "30d",
+  });
+};
 
 module.exports = {
   registerUser,
