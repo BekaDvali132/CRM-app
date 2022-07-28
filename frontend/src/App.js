@@ -6,6 +6,7 @@ import { UserContext } from "./components/hooks/contexts/UserContext";
 import Clinics from "./components/clinics/Clinics";
 import RegisterClinic from "./components/clinics/RegisterClinic";
 import EditClinic from "./components/clinics/EditClinic";
+import Offers from "./components/offers/Offers";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
             <Route path="/clinics" element={<Clinics />}/>
             <Route path="/clinics/register" element={<RegisterClinic />}/>
             <Route path="/clinics/edit/:id" element={<EditClinic />}/>
+            <Route path="/clinics/edit/:id" element={<Offers />}/>
             </Route>
           </Routes>
         </div>
