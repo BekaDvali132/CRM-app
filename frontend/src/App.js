@@ -5,6 +5,7 @@ import UserRoute from "./components/layout/UserRoute";
 import { UserContext } from "./components/hooks/contexts/UserContext";
 import Clinics from "./components/clinics/Clinics";
 import RegisterClinic from "./components/clinics/RegisterClinic";
+import EditClinic from "./components/clinics/EditClinic";
 
 function App() {
   return (
@@ -17,7 +18,7 @@ function App() {
             <Route path="/" element={<UserRoute />}>
             <Route path="/clinics" element={<Clinics />}/>
             <Route path="/clinics/register" element={<RegisterClinic />}/>
-
+            <Route path="/clinics/edit/:id" element={<EditClinic />}/>
             </Route>
           </Routes>
         </div>

@@ -1,5 +1,6 @@
-import { Button, Space, Table } from "antd";
+import { Button, notification, Space, Table } from "antd";
 import axios from "axios";
+import moment from "moment";
 import { useState } from "react";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -21,9 +22,24 @@ const columns = [
     key: "phone_number",
   },
   {
-    title: "საკონტაქტო პირი",
-    dataIndex: "contact_person",
-    key: "contact_person",
+    title: "სტატუსი",
+    dataIndex: "status",
+    key: "status",
+  },
+  {
+    title: "რეგისტრაციის თარიღი",
+    dataIndex: "register_date",
+    key: "register_date",
+  },
+  {
+    title: "შემდეგი კონტაქტის თარიღი",
+    dataIndex: "contract_date",
+    key: "contract_date",
+  },
+  {
+    title: "მენეჯერი",
+    dataIndex: "status",
+    key: "status",
   },
   {
     title: "რედაქტირება",
@@ -40,17 +56,37 @@ const columns = [
 const Clinics = () => {
   const [clinics, setClincs] = useState([]);
   const navigate = useNavigate()
-
+  const [render, setRender] = useState(true)
   const getClinics = () => {
+    
     axios.get("api/clinics").then((res) => {
       if (res.data.status === "success") {
         setClincs(res.data.data);
       }
     });
   };
+
   useEffect(() => {
     getClinics();
-  }, []);
+  }, [render]);
+
+  const deleteClinic = (id) => {
+    notification['info']({
+      key: 'updatable',
+      message: 'მიმდინარეობს კლინიკის წაშლა',
+    })
+    axios.delete(`/api/clinics/${id}`).then(
+      res =>{
+        if (res.data?.status === 'success') {
+          notification['success']({
+            key: 'updatable',
+            message: 'კლინიკა წარმატებით წაიშალა',
+          })
+          setRender(!render)
+        }
+      }
+    )
+  }
   return (
     <Space direction="vertical" size={"large"} className="clinic-table">
       <Button type="primary mb-3" onClick={()=>navigate('/clinics/register')}>კლინიკის რეგისტრაცია</Button>
@@ -60,9 +96,15 @@ const Clinics = () => {
         dataSource={clinics?.map((clinic) => {
           return ({
             key: clinic._id,
-            name: clinic.text,
-            age: 32,
-            address: "10 Downing Street",
+            name: clinic.name,
+            identity_code: clinic.identity_code,
+            phone_number: clinic.phone_number,
+            status: clinic.status,
+            register_date: moment(clinic.register_date).format('DD/MM/YYYY'),
+            contract_date: moment(clinic.contract_date).format('DD/MM/YYYY'),
+            manager: clinic.manager,
+            edit: <Button type="secondary" onClick={()=>navigate(`/clinics/edit/${clinic._id}`)}>რედაქტირება</Button>,
+            delete: <Button type="danger" onClick={()=>deleteClinic(clinic._id)}>წაშლა</Button>
           });
         })}
       />

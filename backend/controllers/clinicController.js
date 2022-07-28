@@ -2,6 +2,8 @@ const asyncHandler = require("express-async-handler");
 
 const Clinic = require("../models/clinicModel");
 const User = require("../models/userModel");
+const moment = require('moment')
+
 const { body, validationResult } = require('express-validator');
 
 //@desc     Get Clinics
@@ -15,6 +17,18 @@ const getClinics = asyncHandler(async (req, res) => {
   res.status(200).json({
     status: "success",
     data: clinics,
+  });
+});
+
+//@desc     Get Clinic
+//@route    GET /api/clinics/:id
+//access    Private
+const getClinic = asyncHandler(async (req, res) => {
+  const clinic = await Clinic.findById(req.params.id);
+    
+    res.status(200).json({
+    status: "success",
+    data: clinic,
   });
 });
 
@@ -47,7 +61,20 @@ const setClinic = asyncHandler( async (req, res) => {
   if (!contract_date) {
     errors.contract_date = "გთხოვთ მიუთითოთ კონტრაქტის თარიღი";
   }
+  if (contract_date) {
+    let contract = moment(contract_date).startOf('day');
+    let date = moment().startOf('day')
+    let diff = moment.duration(contract.diff(date)).asDays().toString()
+    if (diff<0) {
+      errors.contract_date = `მიმდინარე თარიღი ${diff?.replace('-','')} სცდება დღით კონტრაქტის თარიღის`;
+    }
+  }
 
+  const clinicExists = await Clinic.find({phone_number:phone_number})
+
+  if (clinicExists.length !== 0) {
+    errors.phone_number = `კლინიკა მითითებული ტელეფონის ნომრით უკვე არსებობს`;
+  }
 
   if (Object.keys(errors).length > 0) {
     res.json({
@@ -57,11 +84,9 @@ const setClinic = asyncHandler( async (req, res) => {
     return;
   }
 
-  const clinic = await Clinic.create({
-    text: req.body.text,
-    manager: req.user.id,
-    contact_person
-  });
+  const clinic = await Clinic.create(
+    req.body
+  );
   res.status(200).json({
     status: "success",
     data: clinic,
@@ -72,6 +97,9 @@ const setClinic = asyncHandler( async (req, res) => {
 //@route    PUT /api/clinics/:id
 //access    Private
 const updateClinic = asyncHandler(async (req, res) => {
+
+  const { identity_code, phone_number, name, contact_person, status, register_date, contract_date, comment, manager, id } = req.body;
+
   const clinic = await Clinic.findById(req.params.id);
 
   if (!clinic) {
@@ -90,13 +118,59 @@ const updateClinic = asyncHandler(async (req, res) => {
     })
   }
 
-  // Make sure the logged in user matches the goal user
+  // Make sure the logged in user matches the clinic manager
   if (clinic.manager.toString() !== user.id) {
     res.status(401).json({
       status:'unsuccess',
       message: 'მომხმარებელს რედაქტირების უფლება არ აქვს'
     })
   } else {
+
+    const errors = {};
+
+  // Check if something is missing
+  if (!phone_number) {
+    errors.phone_number = "გთხოვთ მიუთითოთ ტელეფონის ნომერი";
+  }
+  if (!name) {
+    errors.name = "გთხოვთ მიუთითოთ სახელი";
+  }
+  if (!status) {
+    errors.status = "გთხოვთ მიუთითოთ სტატუსი";
+  }
+  if (!register_date) {
+    errors.register_date = "გთხოვთ მიუთითოთ რეგისტრაციის თარიღი";
+  }
+  if (!manager) {
+    errors.manager = "გთხოვთ მიუთითოთ მენეჯერი";
+  }
+  if (!contract_date) {
+    errors.contract_date = "გთხოვთ მიუთითოთ კონტრაქტის თარიღი";
+  }
+  if (contract_date) {
+    let contract = moment(contract_date).startOf('day');
+    let date = moment().startOf('day')
+    let diff = moment.duration(contract.diff(date)).asDays().toString()
+    if (diff<0) {
+      errors.contract_date = `მიმდინარე თარიღი ${diff?.replace('-','')} სცდება დღით კონტრაქტის თარიღის`;
+    }
+  }
+
+  const clinicExists = await Clinic.find({phone_number:phone_number})
+
+  console.log(clinicExists);
+
+  if (clinicExists.length>0 && clinicExists._id === id) {
+    errors.phone_number = `კლინიკა მითითებული ტელეფონის ნომრით უკვე არსებობს`;
+  }
+  
+  if (Object.keys(errors).length > 0) {
+    res.json({
+      status: "unsuccess",
+      errors: errors,
+    });
+    return;
+  }
 
   const updatedClinic = await Clinic.findByIdAndUpdate(
     req.params.id,
@@ -158,4 +232,5 @@ module.exports = {
   setClinic,
   updateClinic,
   deleteClinic,
+  getClinic
 };
