@@ -10,9 +10,18 @@ const { body, validationResult } = require('express-validator');
 //@route    GET /api/clinics
 //access    Private
 const getClinics = asyncHandler(async (req, res) => {
-  const clinics = await Clinic.find({
-    manager: req.user.id
-  });
+
+  const role = await User.findById(req.user.id)
+
+  let clinics;
+
+  if (role.role===1) {
+    clinics = await Clinic.find({})
+  } else {
+    clinics = await Clinic.find({
+      manager: req.user.id
+    });
+  }
 
   res.status(200).json({
     status: "success",
@@ -157,8 +166,6 @@ const updateClinic = asyncHandler(async (req, res) => {
   }
 
   const clinicExists = await Clinic.find({phone_number:phone_number})
-
-  console.log(clinicExists);
 
   if (clinicExists.length>0 && clinicExists._id === id) {
     errors.phone_number = `კლინიკა მითითებული ტელეფონის ნომრით უკვე არსებობს`;

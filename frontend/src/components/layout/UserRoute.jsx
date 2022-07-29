@@ -3,9 +3,10 @@ import {
   MenuUnfoldOutlined,
   MedicineBoxOutlined,
   InfoCircleOutlined,
-  LogoutOutlined
+  LogoutOutlined,
+  UserOutlined
 } from "@ant-design/icons";
-import { Layout, Menu } from "antd";
+import { Affix, Layout, Menu } from "antd";
 import axios from "axios";
 import React, { useState } from "react";
 import { useEffect } from "react";
@@ -72,7 +73,8 @@ const UserRoute = () => {
 
   return (
     <Layout>
-      <Sider trigger={null} collapsible collapsed={collapsed}>
+      <Affix style={{minHeight:'100vh'}}>
+      <Sider trigger={null} collapsible collapsed={collapsed} style={{minHeight:'100vh'}}>
         <div className="logo" />
         <h1>{user?.name}</h1>
         <Menu
@@ -94,6 +96,12 @@ const UserRoute = () => {
             },
             {
               key: "3",
+              icon: <UserOutlined />,
+              label: "მომხმარებლები",
+              onClick: ()=>navigate('/users')
+            },
+            {
+              key: "4",
               icon: <LogoutOutlined />,
               style: {position:"absolute",bottom:'50px',width:'100%'},
               label: "გასვლა",
@@ -102,6 +110,7 @@ const UserRoute = () => {
           ]}
         />
       </Sider>
+      </Affix>
       <Layout className="site-layout">
         <Header className="site-layout-background" style={{ padding: 0 }}>
           {collapsed ? (

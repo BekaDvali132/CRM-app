@@ -2,12 +2,13 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const asyncHandler = require("express-async-handler");
 const User = require("../models/userModel");
+const {sendMail} = require('../functions/sendEmail');
 
 //@desc     Register new user
 //@route    POST /api/users
 //access    Private
 const registerUser = asyncHandler(async (req, res) => {
-  const { name, email, password, role } = req.body;
+  const { name, email, role } = req.body;
 
   const errors = {};
 
@@ -18,9 +19,6 @@ const registerUser = asyncHandler(async (req, res) => {
   }
   if (!email) {
     errors.email = "გთხოვთ მიუთითოთ ელექტრონული ფოსტა";
-  }
-  if (!password) {
-    errors.password = "გთხოვთ მიუთითოთ პაროლი";
   }
   if (!role) {
     errors.role = "გთხოვთ მიუთითოთ მომხმარებლის როლი";
@@ -45,9 +43,11 @@ const registerUser = asyncHandler(async (req, res) => {
     return;
   }
 
+  const generatedPassword = Math.random().toString(36).slice(-8);
+
   // Hash password
   const salt = await bcrypt.genSalt(10);
-  const hashedPassword = await bcrypt.hash(password, salt);
+  const hashedPassword = await bcrypt.hash(generatedPassword, salt);
 
   // Create user
   const user = await User.create({
@@ -58,16 +58,18 @@ const registerUser = asyncHandler(async (req, res) => {
   });
 
   if (user) {
+    sendMail(email,role,name,generatedPassword)
+
     res.status(201).json({
-      status: "success",
-      data: {
-        _id: user.id,
-        name: user.name,
-        email: user.email,
-        token: generateToken(user._id),
-      },
-    });
-    return;
+              status: "success",
+              data: {
+                _id: user.id,
+                name: user.name,
+                email: user.email,
+                token: generateToken(user._id),
+                password: hashedPassword,
+              },
+            });
   } else {
     res.json({
       status: "unsuccess",
@@ -103,7 +105,7 @@ const loginUser = asyncHandler(async (req, res) => {
   // Find for user and if found, success
 
   const user = await User.findOne({ name });
-  
+
   if (user && (await bcrypt.compare(password, user.password))) {
     res.json({
       status: "success",
@@ -142,13 +144,35 @@ const getMe = asyncHandler(async (req, res) => {
     data: {
       id: _id,
       name,
-      email
+      email,
     },
   });
-  
+
   res.json({
     message: "User data Display",
   });
+});
+
+//@desc     Get every user data
+//@route    Get /api/users/
+//access    Private
+const getUsers = asyncHandler(async (req, res) => {
+  const role = await User.findById(req.user.id);
+
+  let users;
+
+  if (role && role.role === 1) {
+    users = await User.find({});
+    res.status(200).send({
+      status: "success",
+      data: users,
+    });
+  } else {
+    res.status(200).send({
+      status: "unsuccess",
+      message: "თქვენ არ გაქვთ ადმინის როლი",
+    });
+  }
 });
 
 // Generate JWT
@@ -163,4 +187,5 @@ module.exports = {
   registerUser,
   loginUser,
   getMe,
+  getUsers,
 };

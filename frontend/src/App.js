@@ -7,6 +7,8 @@ import Clinics from "./components/clinics/Clinics";
 import RegisterClinic from "./components/clinics/RegisterClinic";
 import EditClinic from "./components/clinics/EditClinic";
 import Offers from "./components/offers/Offers";
+import Users from "./components/users/Users";
+import UsersRegister from "./components/users/UsersRegister";
 
 function App() {
   return (
@@ -21,6 +23,8 @@ function App() {
             <Route path="/clinics/register" element={<RegisterClinic />}/>
             <Route path="/clinics/edit/:id" element={<EditClinic />}/>
             <Route path="/clinics/edit/:id" element={<Offers />}/>
+            <Route path="/users" element={<Users />}/>
+            <Route path="/users/register" element={<UsersRegister />}/>
             </Route>
           </Routes>
         </div>

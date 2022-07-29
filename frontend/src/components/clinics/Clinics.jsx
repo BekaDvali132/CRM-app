@@ -5,12 +5,15 @@ import { useState } from "react";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Clinics.css";
+
+const status = [
+  'მუშავდება',
+  'პოტენციური',
+  'წაგებული',
+  'დაკონტრაქტებული',
+  'არ არის დაინტერესებული'
+]
 const columns = [
-  {
-    title: "კლინიკის დასახელება",
-    dataIndex: "name",
-    key: "name",
-  },
   {
     title: "საიდენტიფიკაციო/კოდი ",
     dataIndex: "identity_code",
@@ -22,9 +25,24 @@ const columns = [
     key: "phone_number",
   },
   {
-    title: "სტატუსი",
-    dataIndex: "status",
-    key: "status",
+    title: "კლინიკის დასახელება",
+    dataIndex: "name",
+    key: "name",
+  },
+  {
+    title: "საკონტაქტო პირის ტელეფონის ნომერი",
+    dataIndex: "contact_person_phone",
+    key: "contact_person_phone",
+  },
+  {
+    title: "საკონტაქტო პირის ელ.ფოსტა",
+    dataIndex: "contact_person_email",
+    key: "contact_person_email",
+  },
+  {
+    title: "საკონტაქტო პირის პოზიცია",
+    dataIndex: "contact_person_position",
+    key: "contact_person_position",
   },
   {
     title: "რეგისტრაციის თარიღი",
@@ -37,9 +55,14 @@ const columns = [
     key: "contract_date",
   },
   {
-    title: "მენეჯერი",
+    title: "სტატუს",
     dataIndex: "status",
     key: "status",
+  },
+  {
+    title: "მენეჯერი",
+    dataIndex: "manager",
+    key: "manager",
   },
   {
     title: "რედაქტირება",
@@ -116,16 +139,23 @@ const Clinics = () => {
 
         <Table
           columns={columns}
+          pagination={{
+            position: ['topLeft', 'bottomRight'],
+            pageSize: '5'
+          }}
           dataSource={clinics?.map((clinic) => {
             return {
               key: clinic._id,
               name: clinic.name,
               identity_code: clinic.identity_code,
               phone_number: clinic.phone_number,
-              status: clinic.status,
+              contact_person_email: clinic.contact_person.email,
+              contact_person_position: clinic.contact_person.position,
+              status: status[clinic.status-1],
               register_date: moment(clinic.register_date).format("DD/MM/YYYY"),
               contract_date: moment(clinic.contract_date).format("DD/MM/YYYY"),
               manager: clinic.manager,
+              contact_person_phone: clinic.contact_person.phone_number,
               edit: (
                 <Button
                   type="secondary"
