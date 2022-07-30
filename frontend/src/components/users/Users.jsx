@@ -1,4 +1,4 @@
-import { Button, Modal, Space, Table } from "antd";
+import { Button, message, Modal, notification, Space, Table } from "antd";
 import axios from "axios";
 import { useContext } from "react";
 import { useEffect } from "react";
@@ -42,6 +42,7 @@ const roles = [
 const Users = () => {
 
     const [show, setShow] = useState()
+    const [render, setRender] = useState(false)
     const [deletableUser, setDeletableUser] = useState()
     const [users, setUsers] = useState([])
     const userInfo = useContext(UserContext)
@@ -56,13 +57,38 @@ const Users = () => {
 
             }
         })
-    },[])
+    },[render])
 
     const deleteClinic = () => {
 
+    setDeletableUser(null);
+    setShow(false);
+
+    notification.destroy();
+    message.loading({
+      key: "updatable",
+      content: "მიმდინარეობს მომხმარებლის წაშლა",
+    });
+    axios.delete(`/api/users/${deletableUser?._id}`).then((res) => {
+        if (res.data?.status === "success") {
+          message.destroy();
+          notification["success"]({
+            key: "updatable",
+            message: "მომხმარებელი წარმატებით წაიშალა",
+          });
+          setRender(!render);
+        } else {
+          notification["error"]({
+            key: "updatable",
+            message: "მომხმარებელი ვერ წაიშალა",
+          });
+        }
+      });
     }
 
     const handleCancel = () => {
+
+        setShow(false)
 
     }
 
@@ -91,7 +117,7 @@ const Users = () => {
               edit: (
                 <Button
                   type="secondary"
-                  onClick={() => navigate(`/clinics/edit/${user._id}`)}
+                  onClick={() => navigate(`/users/edit/${user._id}`)}
                 >
                   რედაქტირება
                 </Button>

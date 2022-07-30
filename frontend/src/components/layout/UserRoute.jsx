@@ -23,7 +23,7 @@ const UserRoute = () => {
   const user = useContext(UserContext);
 
   axios.interceptors.request.use(function (config) {
-    const bearer = user?.token || "";
+    const bearer = user?.token || JSON.parse(localStorage.getItem('user'))?.id || '';
 
     config.headers.authorization = "Bearer " + bearer;
     return config;

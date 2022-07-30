@@ -95,7 +95,7 @@ const Clinics = () => {
     getClinics();
   }, [render]);
 
-  const deleteClinic = (id) => {
+  const deleteClinic = () => {
     setDeletableClinic(null);
     setShow(false);
 

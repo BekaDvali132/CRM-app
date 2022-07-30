@@ -1,27 +1,49 @@
-import { Button, DatePicker, Form, Input, Modal, Select, Space } from "antd";
-import { useContext, useState } from "react";
 import axios from "axios";
+import { useContext, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { Button, DatePicker, Form, Input, Select, Space } from "antd";
 import moment from "moment";
-import {ArrowLeftOutlined} from "@ant-design/icons";
-import { useNavigate } from "react-router-dom";
+import { ArrowLeftOutlined } from "@ant-design/icons";
+import { useState } from "react";
+import { UserContext } from "../hooks/contexts/UserContext";
 
-const UsersRegister = () => {
-  const [errors, setErrors] = useState();
+
+const EditUsers = () => {
+    const [errors, setErrors] = useState();
+  const [fields, setFields] = useState([]);
+  const user = useContext(UserContext);
   const navigate = useNavigate();
+  const { id } = useParams();
+  const [form] = Form.useForm()
+
+
+  useEffect(() => {
+    axios.get(`/api/users/${id}`).then(
+        res => {
+            if (res.data.status === 'success') {
+              form.setFieldsValue(res.data.data)
+              // Object.keys(res.data.data).forEach(key => {
+              //   setFields(current => [...current,{
+              //       name: [
+              //         key
+              //       ],
+              //       value: res.data.data?.[key]
+              //     }])
+              //   });
+              setFields(res.data.data)
+            }
+        }
+    );
+  }, []);
 
   const onFinish = (values) => {
-
-    axios.post("/api/users", values).then((res) => {
+    values.manager = user.id;
+    values.id = id;
+    axios.put(`/api/clinics/${id}`, values).then((res) => {
       if (res.data.status === "success") {
-        navigate('/users')
         setErrors(null);
       } else {
         setErrors(res.data.errors);
-        if (res.data?.message) {
-          Modal.error({
-            title: res.data.message
-          })
-        }
       }
     });
   };
@@ -30,12 +52,13 @@ const UsersRegister = () => {
     <Space size={"large"} direction="vertical" style={{ width: "100%" }}>
       <ArrowLeftOutlined
         style={{ fontSize: "20px" }}
-        onClick={() => navigate("/clinics")}
+        onClick={() => navigate("/users")}
       />
       <Form
         layout={"vertical"}
         onFinish={onFinish}
         style={{ maxWidth: "750px", margin: "auto" }}
+        form={form}
       >
         <Form.Item
           label="*მომხმარებლის დასახელება"
@@ -92,6 +115,6 @@ const UsersRegister = () => {
       </Form>
     </Space>
   );
-};
-
-export default UsersRegister;
+}
+ 
+export default EditUsers;

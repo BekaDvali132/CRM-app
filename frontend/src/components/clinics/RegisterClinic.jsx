@@ -1,4 +1,4 @@
-import { Button, DatePicker, Form, Input, Select, Space } from "antd";
+import { Button, DatePicker, Form, Input, Select, Space, Modal } from "antd";
 import { useContext, useState } from "react";
 import axios from "axios";
 import moment from "moment";
@@ -14,9 +14,15 @@ const RegisterClinic = () => {
     values.manager = user.id
     axios.post("/api/clinics", values).then((res) => {
       if (res.data.status === 'success') {
+        navigate('/users')
         setErrors(null)
       }else{
         setErrors(res.data.errors)
+        if (res.data?.message) {
+          Modal.error({
+            title: res.data.message
+          })
+        }
       }
     });
   };

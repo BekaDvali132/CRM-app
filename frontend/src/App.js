@@ -9,6 +9,7 @@ import EditClinic from "./components/clinics/EditClinic";
 import Offers from "./components/offers/Offers";
 import Users from "./components/users/Users";
 import UsersRegister from "./components/users/UsersRegister";
+import EditUsers from "./components/users/EditUsers";
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
             <Route path="/clinics/edit/:id" element={<Offers />}/>
             <Route path="/users" element={<Users />}/>
             <Route path="/users/register" element={<UsersRegister />}/>
+            <Route path="/users/edit/:id" element={<EditUsers />}/>
             </Route>
           </Routes>
         </div>

@@ -33,12 +33,26 @@ const registerUser = asyncHandler(async (req, res) => {
   }
 
   // Check if user exists
-  const userExists = await User.findOne({ email });
+  const emailExists = await User.findOne({ email });
+
+  if (emailExists) {
+    res.status(200).json({
+      status: "unsuccess",
+      errors: {
+        email:"მომხმარებელი მითითებული მეილით უკვე არსებობს"
+      },
+    });
+    return;
+  }
+
+  const userExists = await User.findOne({ name });
 
   if (userExists) {
     res.status(200).json({
       status: "unsuccess",
-      message: "მომხმარებელი უკვე არსებობს",
+      errors: {
+        name:"მომხმარებელი მითითებული დასახელებით უკვე არსებობს"
+      },
     });
     return;
   }
@@ -175,6 +189,50 @@ const getUsers = asyncHandler(async (req, res) => {
   }
 });
 
+//@desc     Delete user
+//@route    Delete /api/users/
+//access    Private
+const deleteUser = asyncHandler(async (req, res) => {
+  const role = await User.findById(req.user.id);
+
+  let user;
+
+  if (role && role.role === 1) {
+    user = await User.findById(req.params.id);
+    user.remove()
+    res.status(200).send({
+      status: "success",
+    });
+  } else {
+    res.status(200).send({
+      status: "unsuccess",
+      message: "თქვენ არ გაქვთ ადმინის როლი",
+    });
+  }
+});
+
+//@desc     Get Specific user
+//@route    Get /api/users/:id
+//access    Private
+const GetUser = asyncHandler(async (req, res) => {
+  const role = await User.findById(req.params.id);
+
+  let user;
+
+  if (role && role.role === 1) {
+    user = await User.findById(req.params.id);
+    user.remove()
+    res.status(200).send({
+      status: "success",
+    });
+  } else {
+    res.status(200).send({
+      status: "unsuccess",
+      message: "თქვენ არ გაქვთ ადმინის როლი",
+    });
+  }
+});
+
 // Generate JWT
 
 const generateToken = (id) => {
@@ -188,4 +246,5 @@ module.exports = {
   loginUser,
   getMe,
   getUsers,
+  deleteUser
 };
