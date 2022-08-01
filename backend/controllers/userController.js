@@ -2,7 +2,8 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const asyncHandler = require("express-async-handler");
 const User = require("../models/userModel");
-const {sendMail} = require('../functions/sendEmail');
+const Verify = require("../models/verifyModel");
+const { sendMail, sendCodeMail, sendNewPasswordMail } = require("../functions/sendEmail");
 
 //@desc     Register new user
 //@route    POST /api/users
@@ -39,7 +40,7 @@ const registerUser = asyncHandler(async (req, res) => {
     res.status(200).json({
       status: "unsuccess",
       errors: {
-        email:"მომხმარებელი მითითებული მეილით უკვე არსებობს"
+        email: "მომხმარებელი მითითებული მეილით უკვე არსებობს",
       },
     });
     return;
@@ -51,7 +52,7 @@ const registerUser = asyncHandler(async (req, res) => {
     res.status(200).json({
       status: "unsuccess",
       errors: {
-        name:"მომხმარებელი მითითებული დასახელებით უკვე არსებობს"
+        name: "მომხმარებელი მითითებული დასახელებით უკვე არსებობს",
       },
     });
     return;
@@ -72,18 +73,18 @@ const registerUser = asyncHandler(async (req, res) => {
   });
 
   if (user) {
-    sendMail(email,role,name,generatedPassword)
+    sendMail(email, role, name, generatedPassword);
 
     res.status(201).json({
-              status: "success",
-              data: {
-                _id: user.id,
-                name: user.name,
-                email: user.email,
-                token: generateToken(user._id),
-                password: hashedPassword,
-              },
-            });
+      status: "success",
+      data: {
+        _id: user.id,
+        name: user.name,
+        email: user.email,
+        token: generateToken(user._id),
+        password: hashedPassword,
+      },
+    });
   } else {
     res.json({
       status: "unsuccess",
@@ -124,11 +125,11 @@ const editUser = asyncHandler(async (req, res) => {
   // Check if user exists
   const emailExists = await User.find({ email });
 
-  if (emailExists.length>1 && emailExists[0]._id !== id) {
+  if (emailExists.length > 1 && emailExists[0]._id !== id) {
     res.status(200).json({
       status: "unsuccess",
       errors: {
-        email:"მომხმარებელი მითითებული მეილით უკვე არსებობს"
+        email: "მომხმარებელი მითითებული მეილით უკვე არსებობს",
       },
     });
     return;
@@ -140,14 +141,14 @@ const editUser = asyncHandler(async (req, res) => {
     res.status(200).json({
       status: "unsuccess",
       errors: {
-        name:"მომხმარებელი არ არსებობს"
+        name: "მომხმარებელი არ არსებობს",
       },
     });
     return;
   }
 
   // Edit user
-  const user = await User.findByIdAndUpdate(userExists._id,{
+  const user = await User.findByIdAndUpdate(userExists._id, {
     name,
     email,
     role,
@@ -157,14 +158,14 @@ const editUser = asyncHandler(async (req, res) => {
     // sendMail(email,role,name,generatedPassword)
 
     res.status(201).json({
-              status: "success",
-              data: {
-                _id: user.id,
-                name: user.name,
-                email: user.email,
-                token: generateToken(user._id)
-              },
-            });
+      status: "success",
+      data: {
+        _id: user.id,
+        name: user.name,
+        email: user.email,
+        token: generateToken(user._id),
+      },
+    });
   } else {
     res.json({
       status: "unsuccess",
@@ -235,13 +236,15 @@ const loginUser = asyncHandler(async (req, res) => {
 const getMe = asyncHandler(async (req, res) => {
   const { _id, name, email } = await User.findById(req.user.id);
 
+  
+
   res.status(200).json({
     status: "success",
     data: {
       id: _id,
       name,
       email,
-      role: user.role
+      role: user.role,
     },
   });
 
@@ -282,7 +285,7 @@ const deleteUser = asyncHandler(async (req, res) => {
 
   if (role && role.role === 1) {
     user = await User.findById(req.params.id);
-    user.remove()
+    user.remove();
     res.status(200).send({
       status: "success",
     });
@@ -303,7 +306,7 @@ const getUser = asyncHandler(async (req, res) => {
   if (user) {
     res.status(200).send({
       status: "success",
-      data: user
+      data: user,
     });
   } else {
     res.status(200).send({
@@ -312,6 +315,117 @@ const getUser = asyncHandler(async (req, res) => {
     });
   }
 });
+
+const sendCode = async (req, res) => {
+  const { email } = req.body;
+
+  const errors = {};
+
+  // Check if something is missing
+
+  if (!email) {
+    errors.email = "გთხოვთ მიუთითოთ ელ.ფოსტა";
+  }
+
+  // Check if user exists
+
+  const userExists = await User.find({ email });
+
+  if (userExists.length === 0) {
+    errors.email = "მითითებული ელ.ფოსტით მომხმარებელი არ არსებობს";
+  }
+
+  if (Object.keys(errors).length > 0) {
+    res.json({
+      status: "unsuccess",
+      errors: errors,
+    });
+    return;
+  }
+
+  const code = Math.random().toString(36).slice(-4);
+
+  // Check if code exists for user and delete
+
+  const verifyExists = await Verify.findOne({ user_id: userExists[0]._id });
+
+  if (verifyExists) {
+    verifyExists.remove();
+  }
+
+  const verifyCode = await Verify.create({
+    user_id: userExists[0]._id,
+    code,
+    valid: new Date(new Date().getTime() + 300000),
+  });
+
+  if (verifyCode) {
+    res.status(200).send({
+      status: "success",
+    });
+
+    sendCodeMail(req.body.email, code);
+  } else {
+    res.status(200).send({
+      status: "unsuccess",
+    });
+  }
+};
+
+const submitCode = async (req, res) => {
+  const { code, email } = req.body;
+
+  const verified = await Verify.findOne({ code });
+
+  const user = await User.findOne({email});
+
+
+  if (verified && user) {
+    const generatedPassword = Math.random().toString(36).slice(-8);
+
+    // Hash password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(generatedPassword, salt);
+
+    const updatedUser = await User.findByIdAndUpdate(user._id,{
+      name:user.name,
+      role: user.role,
+      email: user.email,
+      password: hashedPassword
+    })
+
+
+    if (updatedUser) {
+
+      sendNewPasswordMail(user.email, user.name, generatedPassword);
+
+      res.status(201).json({
+        status: "success",
+        data: {
+          _id: updatedUser.id,
+          name: updatedUser.name,
+          email: updatedUser.email,
+          password: hashedPassword,
+        },
+      });
+
+    } else {
+
+      res.json({
+        status: "unsuccess",
+        message: "მომხმარებლის პაროლი აღდგენა ვერ შესრულდა",
+      });
+
+      return;
+
+    }
+  } else {
+    res.stauts(200).json({
+      status: "unsuccess",
+      message: "მომხმარებლის პაროლი აღდგენა ვერ შესრულდა",
+    });
+  }
+};
 
 // Generate JWT
 
@@ -328,5 +442,7 @@ module.exports = {
   getUsers,
   deleteUser,
   getUser,
-  editUser
+  editUser,
+  sendCode,
+  submitCode,
 };

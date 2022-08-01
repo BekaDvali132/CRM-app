@@ -28,4 +28,40 @@ const sendMail = (email, role, name, generatedPassword) => {
   });
 };
 
-module.exports = { sendMail };
+const sendCodeMail = (email,code) => {
+
+  let mailOptions = {
+    from: process.env.EMAIL,
+    to: email,
+    subject: "პაროლის აღდგენის კოდი",
+    text: `თქვენი კოდია ${code}`, // plain text body
+  };
+
+  transporter.sendMail(mailOptions, function (error, info) {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log("email Sent");
+    }
+  });
+
+}
+
+const sendNewPasswordMail = (email, name, generatedPassword) => {
+  let mailOptions = {
+    from: process.env.EMAIL,
+    to: email,
+    subject: "თქვენ წარმატებით აღადგინეთ პაროლი CRM-ზე",
+    text: `თქვენი მონაცემებია დასახელება: ${name} ელ.ფოსტა: ${email} პაროლი: ${generatedPassword}`, // plain text body
+  };
+
+  transporter.sendMail(mailOptions, function (error, info) {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log("email Sent");
+    }
+  });
+};
+
+module.exports = { sendMail, sendCodeMail, sendNewPasswordMail };
