@@ -96,7 +96,7 @@ const UserRoute = ({setUser}) => {
               label: "შეთავაზებები",
               onClick: ()=>navigate('/clinics')
             },
-            {
+            user.role === 1 && {
               key: "3",
               icon: <UserOutlined />,
               label: "მომხმარებლები",

@@ -93,6 +93,87 @@ const registerUser = asyncHandler(async (req, res) => {
   }
 });
 
+//@desc     Edit user
+//@route    PUT /api/users/:id
+//access    Private
+const editUser = asyncHandler(async (req, res) => {
+  const { name, email, role, id } = req.body;
+
+  const errors = {};
+
+  // Check if something is missing
+
+  if (!name) {
+    errors.name = "გთხოვთ მიუთითოთ სახელი";
+  }
+  if (!email) {
+    errors.email = "გთხოვთ მიუთითოთ ელექტრონული ფოსტა";
+  }
+  if (!role) {
+    errors.role = "გთხოვთ მიუთითოთ მომხმარებლის როლი";
+  }
+
+  if (Object.keys(errors).length > 0) {
+    res.json({
+      status: "unsuccess",
+      errors: errors,
+    });
+    return;
+  }
+
+  // Check if user exists
+  const emailExists = await User.find({ email });
+
+  if (emailExists.length>1 && emailExists[0]._id !== id) {
+    res.status(200).json({
+      status: "unsuccess",
+      errors: {
+        email:"მომხმარებელი მითითებული მეილით უკვე არსებობს"
+      },
+    });
+    return;
+  }
+
+  const userExists = await User.findById(id);
+
+  if (!userExists) {
+    res.status(200).json({
+      status: "unsuccess",
+      errors: {
+        name:"მომხმარებელი არ არსებობს"
+      },
+    });
+    return;
+  }
+
+  // Edit user
+  const user = await User.findByIdAndUpdate(userExists._id,{
+    name,
+    email,
+    role,
+  });
+
+  if (user) {
+    // sendMail(email,role,name,generatedPassword)
+
+    res.status(201).json({
+              status: "success",
+              data: {
+                _id: user.id,
+                name: user.name,
+                email: user.email,
+                token: generateToken(user._id)
+              },
+            });
+  } else {
+    res.json({
+      status: "unsuccess",
+      message: "მომხმარებლის მონაცემები არასწორია",
+    });
+    return;
+  }
+});
+
 //@desc     Authenticate a user
 //@route    POST /api/users/login
 //access    Private
@@ -127,6 +208,7 @@ const loginUser = asyncHandler(async (req, res) => {
         _id: user.id,
         name: user.name,
         email: user.email,
+        role: user.role,
         token: generateToken(user._id),
       },
     });
@@ -159,6 +241,7 @@ const getMe = asyncHandler(async (req, res) => {
       id: _id,
       name,
       email,
+      role: user.role
     },
   });
 
@@ -215,20 +298,17 @@ const deleteUser = asyncHandler(async (req, res) => {
 //@route    Get /api/users/:id
 //access    Private
 const getUser = asyncHandler(async (req, res) => {
-  const role = await User.findById(req.params.id);
+  const user = await User.findById(req.params.id);
 
-  let user;
-
-  if (role && role.role === 1) {
-    user = await User.findById(req.params.id);
-    user.remove()
+  if (user) {
     res.status(200).send({
       status: "success",
+      data: user
     });
   } else {
     res.status(200).send({
       status: "unsuccess",
-      message: "თქვენ არ გაქვთ ადმინის როლი",
+      message: "მომხმარებელი ვერ მოიძებნა",
     });
   }
 });
@@ -247,5 +327,6 @@ module.exports = {
   getMe,
   getUsers,
   deleteUser,
-  getUser
+  getUser,
+  editUser
 };

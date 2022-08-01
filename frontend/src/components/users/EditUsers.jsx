@@ -42,6 +42,7 @@ const EditUsers = () => {
     axios.put(`/api/users/${id}`, values).then((res) => {
       if (res.data.status === "success") {
         setErrors(null);
+        navigate('/users')
       } else {
         setErrors(res.data.errors);
       }
@@ -103,8 +104,8 @@ const EditUsers = () => {
             allowClear
             id={errors?.role ? `error` : ""}
           >
-            <Select.Option value="1">ადმინისტრატორი</Select.Option>
-            <Select.Option value="2">მენეჯერი</Select.Option>
+            <Select.Option value={1}>ადმინისტრატორი</Select.Option>
+            <Select.Option value={2}>მენეჯერი</Select.Option>
           </Select>
         </Form.Item>
         <Form.Item>
