@@ -214,7 +214,7 @@ const deleteUser = asyncHandler(async (req, res) => {
 //@desc     Get Specific user
 //@route    Get /api/users/:id
 //access    Private
-const GetUser = asyncHandler(async (req, res) => {
+const getUser = asyncHandler(async (req, res) => {
   const role = await User.findById(req.params.id);
 
   let user;
@@ -246,5 +246,6 @@ module.exports = {
   loginUser,
   getMe,
   getUsers,
-  deleteUser
+  deleteUser,
+  getUser
 };

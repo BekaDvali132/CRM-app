@@ -17,7 +17,7 @@ import "./UserRoute.css";
 
 const { Header, Sider, Content } = Layout;
 
-const UserRoute = () => {
+const UserRoute = ({setUser}) => {
   const [collapsed, setCollapsed] = useState(true);
   const navigate = useNavigate();
   const user = useContext(UserContext);
@@ -35,6 +35,8 @@ const UserRoute = () => {
     },
     function (error) {
       if (error?.response?.status === 401) {
+        setUser('')
+        localStorage.setItem('name','')
         navigate("/login");
       }
     }
@@ -47,7 +49,7 @@ const UserRoute = () => {
 
   useEffect(() => {
     axios
-      .get("/api/users/me", {
+      .get(`/api/user/me`, {
         headers: {
           authorization:
             "Bearer " + JSON.parse(localStorage.getItem("user"))?.token,

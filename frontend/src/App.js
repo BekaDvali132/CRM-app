@@ -10,16 +10,18 @@ import Offers from "./components/offers/Offers";
 import Users from "./components/users/Users";
 import UsersRegister from "./components/users/UsersRegister";
 import EditUsers from "./components/users/EditUsers";
+import { useState } from "react";
 
 function App() {
+  const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')))
+
   return (
-    <UserContext.Provider value={JSON.parse(localStorage.getItem("user"))}>
+    <UserContext.Provider value={user}>
       <Router>
         <div className="App">
           <Routes>
-            <Route path="/login" element={<Login />} />
-            {/* <Route path="/" element={  component={Login}/>} /> */}
-            <Route path="/" element={<UserRoute />}>
+            <Route path="/login" element={<Login setUser={setUser}/>} />
+            <Route path="/" element={<UserRoute setUser={setUser}/>}>
             <Route path="/clinics" element={<Clinics />}/>
             <Route path="/clinics/register" element={<RegisterClinic />}/>
             <Route path="/clinics/edit/:id" element={<EditClinic />}/>

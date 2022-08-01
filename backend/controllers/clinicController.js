@@ -127,8 +127,8 @@ const updateClinic = asyncHandler(async (req, res) => {
     })
   }
 
-  // Make sure the logged in user matches the clinic manager
-  if (clinic.manager.toString() !== user.id) {
+  // Make sure the logged in user is not admin and matches the clinic manager
+  if (user.role !== 1 && clinic.manager.toString() !== user.id) {
     res.status(401).json({
       status:'unsuccess',
       message: 'მომხმარებელს რედაქტირების უფლება არ აქვს'
@@ -215,8 +215,8 @@ const deleteClinic = asyncHandler(async (req, res) => {
     })
   }
 
-  // Make sure the logged in user matches the goal user
-  if (clinic.manager.toString() !== user.id) {
+  // Make sure the logged in user is admin or matches the clinic manager
+  if (user.role!==1 && clinic.manager.toString() !== user.id) {
     res.status(401).json({
       status:'unsuccess',
       message: 'მომხმარებელს წაშლის უფლება არ აქვს'

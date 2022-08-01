@@ -45,6 +45,10 @@ const clinicSchema = mongoose.Schema(
       required: true,
       ref: 'User'
     },
+    manager_name:{
+      type: String,
+      required: true,
+    },
     comment:{
       type: String,
       required: [false, "გთხოვთ მიუთითოთ კომენტარი"],

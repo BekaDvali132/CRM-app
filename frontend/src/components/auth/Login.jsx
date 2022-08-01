@@ -4,14 +4,18 @@ import "./Login.css";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useEffect } from "react";
-const Login = () => {
+import { useContext } from "react";
+import { UserContext } from "../hooks/contexts/UserContext";
+const Login = ({setUser}) => {
   const [errors, setErrors] = useState();
   const navigate = useNavigate();
+  const user = useContext(UserContext)
 
   const onFinish = (values) => {
     axios.post("api/users/login", values).then((res) => {
       if (res.data?.status === "success") {
         setErrors(null);
+        setUser(res.data.data)
         localStorage.setItem("user", JSON.stringify(res?.data?.data));
         navigate("/");
       } else {

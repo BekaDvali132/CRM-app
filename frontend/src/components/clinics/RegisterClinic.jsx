@@ -11,10 +11,10 @@ const RegisterClinic = () => {
   const navigate = useNavigate()
 
   const onFinish = (values) => {
-    values.manager = user.id
+    values.manager = user._id
     axios.post("/api/clinics", values).then((res) => {
       if (res.data.status === 'success') {
-        navigate('/users')
+        navigate('/clinics')
         setErrors(null)
       }else{
         setErrors(res.data.errors)
@@ -144,7 +144,7 @@ const RegisterClinic = () => {
         </Form.Item>
         <Form.Item
           label="*მენეჯერი"
-          name="manager"
+          name="manager_name"
           validateStatus={errors?.manager ? `error` : ""}
           help={errors?.manager}
           initialValue={user.name}

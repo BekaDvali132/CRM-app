@@ -39,11 +39,12 @@ const EditClinic = () => {
   }, []);
 
   const onFinish = (values) => {
-    values.manager = user.id;
+    values.manager = fields?.manager;
     values.id = id;
     axios.put(`/api/clinics/${id}`, values).then((res) => {
       if (res.data.status === "success") {
         setErrors(null);
+        navigate('/clinics')
       } else {
         setErrors(res.data.errors);
       }
@@ -183,10 +184,9 @@ const EditClinic = () => {
         </Form.Item>
         <Form.Item
           label="*მენეჯერი"
-          name="manager"
-          validateStatus={errors?.manager ? `error` : ""}
-          help={errors?.manager}
-          initialValue={user.name}
+          name="manager_name"
+          validateStatus={errors?.manager_name ? `error` : ""}
+          help={errors?.manager_name}
         >
           <Input
             placeholder="შეიყვანეთ მენეჯერი"

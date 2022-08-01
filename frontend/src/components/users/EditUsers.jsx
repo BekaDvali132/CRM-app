@@ -39,7 +39,7 @@ const EditUsers = () => {
   const onFinish = (values) => {
     values.manager = user.id;
     values.id = id;
-    axios.put(`/api/clinics/${id}`, values).then((res) => {
+    axios.put(`/api/users/${id}`, values).then((res) => {
       if (res.data.status === "success") {
         setErrors(null);
       } else {
