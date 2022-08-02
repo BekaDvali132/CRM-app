@@ -11,14 +11,17 @@ import Users from "./components/users/Users";
 import UsersRegister from "./components/users/UsersRegister";
 import EditUsers from "./components/users/EditUsers";
 import { useState } from "react";
+import axios from "axios";
 
 function App() {
   const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')))
 
+  axios.defaults.baseURL = "http://localhost:5000";
+
   return (
     <UserContext.Provider value={user}>
       <Router>
-        <a download={true} href="/resources/Excel.xlsx" >excel</a>
+        <a download={true} href="/CRM/resources/Excel.xlsx" >excel</a>
         <div className="App">
           <Routes>
             <Route path="/login" element={<Login setUser={setUser}/>} />

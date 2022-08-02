@@ -10,7 +10,7 @@ const status = [
   'არ არის დაინტერესებული'
 ]
 
-const generateExcel = (clinics) => {
+const generateExcel = (clinics, res) => {
   // Create a new instance of a Workbook class
   var wb = new xl.Workbook();
 
@@ -67,7 +67,7 @@ const generateExcel = (clinics) => {
     ws.cell(index+2, 12).string(clinic?.comment).style(style);
   })
 
-  wb.write("./resources/Excel.xlsx");
+  wb.write("./resources/report.xlsx");
 };
 
 module.exports = {generateExcel}

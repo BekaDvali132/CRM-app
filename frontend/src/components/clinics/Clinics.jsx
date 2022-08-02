@@ -160,7 +160,11 @@ const Clinics = () => {
   };
 
   const generateExcel = (clinic) => {
-    axios.post("api/clinics/generate", clinic).then((res) => {});
+    axios.post("api/clinics/generate", clinic).then((res) => {
+      if (res.data.status === "success") {
+        window.open(res.data.data)
+      }
+    });
   };
 
   const getClinic = (id) => {
@@ -198,10 +202,12 @@ const Clinics = () => {
               >
                 კლინიკის რეგისტრაცია
               </Button>
-              <Form.Item name={'range'}>
+              <Form.Item name={"range"}>
                 <RangePicker
                   format={"DD/MM/YYYY"}
-                  onChange={(value) => {changeDate(value);}}
+                  onChange={(value) => {
+                    changeDate(value);
+                  }}
                   allowClear
                 />
               </Form.Item>
@@ -214,70 +220,70 @@ const Clinics = () => {
             </div>
 
             <div style={{ display: "flex", justifyContent: "space-between" }}>
-            <Form.Item name={'manager'}>
-              <Select
-                placeholder="აირჩიე მენეჯერი"
-                allowClear
-                onSelect={(value) => getClinics({ manager: value })}
-                onClear={() => getClinics()}
-                onBlur={()=>form.resetFields('manager', null)}
+              <Form.Item name={"manager"}>
+                <Select
+                  placeholder="აირჩიე მენეჯერი"
+                  allowClear
+                  onSelect={(value) => getClinics({ manager: value })}
+                  onClear={() => getClinics()}
+                  onBlur={() => form.resetFields("manager", null)}
                 >
-                {users?.map((user) => (
-                  <Select.Option value={user._id} key={user._id}>
-                    {user.name}
-                  </Select.Option>
-                ))}
-              </Select>
+                  {users?.map((user) => (
+                    <Select.Option value={user._id} key={user._id}>
+                      {user.name}
+                    </Select.Option>
+                  ))}
+                </Select>
               </Form.Item>
-              <Form.Item name='clinic'>
-              <Select
-                placeholder="აირჩიე კლინიკა"
-                allowClear
-                onSelect={(value) => getClinic(value)}
-                onClear={() => getClinics()}
-              >
-                {clinics?.map((clinic) => (
-                  <Select.Option value={clinic._id} key={clinic._id}>
-                    {clinic.name}
-                  </Select.Option>
-                ))}
-              </Select>
+              <Form.Item name="clinic">
+                <Select
+                  placeholder="აირჩიე კლინიკა"
+                  allowClear
+                  onSelect={(value) => getClinic(value)}
+                  onClear={() => getClinics()}
+                >
+                  {clinics?.map((clinic) => (
+                    <Select.Option value={clinic._id} key={clinic._id}>
+                      {clinic.name}
+                    </Select.Option>
+                  ))}
+                </Select>
               </Form.Item>
-              <Form.Item name='status'>
-              <Select
-                placeholder="აირჩიე სტატუსი"
-                allowClear
-                onSelect={(value) => {
-                  getClinics({ status: value });
-                }}
-                onClear={() => getClinics()}
-              >
-                {status?.map((stat) => (
-                  <Select.Option
-                    value={status.indexOf(stat) + 1}
-                    key={status.indexOf(stat) + 1}
-                  >
-                    {stat}
-                  </Select.Option>
-                ))}
-              </Select>
+              <Form.Item name="status">
+                <Select
+                  placeholder="აირჩიე სტატუსი"
+                  allowClear
+                  onSelect={(value) => {
+                    getClinics({ status: value });
+                  }}
+                  onClear={() => getClinics()}
+                >
+                  {status?.map((stat) => (
+                    <Select.Option
+                      value={status.indexOf(stat) + 1}
+                      key={status.indexOf(stat) + 1}
+                    >
+                      {stat}
+                    </Select.Option>
+                  ))}
+                </Select>
               </Form.Item>
-              <Form.Item  name='expired'>
-              <Checkbox
-                onChange={(e) =>
-                  getClinics(
-                    e.target.checked
-                      ? {
-                          expired: true,
-                          start_date: moment(new Date(2001, 1, 1)).toDate(),
-                          end_date: moment().startOf("day").toDate(),
-                        }
-                      : ""
-                  )
-                }
-              >
-                ვადაგადაცილებულები
-              </Checkbox>
+              <Form.Item name="expired">
+                <Checkbox
+                  onChange={(e) =>
+                    getClinics(
+                      e.target.checked
+                        ? {
+                            expired: true,
+                            start_date: moment(new Date(2001, 1, 1)).toDate(),
+                            end_date: moment().startOf("day").toDate(),
+                          }
+                        : ""
+                    )
+                  }
+                >
+                  ვადაგადაცილებულები
+                </Checkbox>
               </Form.Item>
             </div>
           </Space>

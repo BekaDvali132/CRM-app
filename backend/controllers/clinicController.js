@@ -316,11 +316,11 @@ const deleteClinic = asyncHandler(async (req, res) => {
 });
 
 const generateClinicsExcel = async (req, res) => {
-  generateExcel(req.body);
+  generateExcel(req.body,res);
 
   res.status(200).json({
     status: `success`,
-    data: req.body,
+    data: 'http://localhost:5000/resources/report.xlsx',
   });
 };
 

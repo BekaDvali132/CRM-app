@@ -5,14 +5,23 @@ const connectDB = require('./config/db')
 const port = process.env.PORT || 5000;
 const {getMe} = require('./controllers/userController')
 const {protect} = require('./middleware/authMiddleware')
+const cors = require('cors')
+const path = require('path')
 
 connectDB()
 
+const corsOption = {
+    origin: 'http://localhost:3000',
+}
+
 const app = express();
 
+app.use(cors(corsOption))
 app.use(express.json())
 app.use(express.urlencoded({extended: false}))
 
+app.use('/resources', express.static(path.join(__dirname, './resources')));
+app.use(`/resources`,express.static('resources'))
 app.use("/api/clinics", require("./routes/clinicRoutes"));
 app.use("/api/users", require("./routes/userRoutes"));
 app.get("/api/user/me", protect, getMe);
