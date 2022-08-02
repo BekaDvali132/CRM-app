@@ -1,4 +1,15 @@
-import { Button, message, Modal, notification, Space, Table } from "antd";
+import {
+  Button,
+  Checkbox,
+  DatePicker,
+  message,
+  Modal,
+  notification,
+  Select,
+  Space,
+  Table,
+  Form,
+} from "antd";
 import axios from "axios";
 import moment from "moment";
 import { useState } from "react";
@@ -7,12 +18,12 @@ import { useNavigate } from "react-router-dom";
 import "./Clinics.css";
 
 const status = [
-  'მუშავდება',
-  'პოტენციური',
-  'წაგებული',
-  'დაკონტრაქტებული',
-  'არ არის დაინტერესებული'
-]
+  "მუშავდება",
+  "პოტენციური",
+  "წაგებული",
+  "დაკონტრაქტებული",
+  "არ არის დაინტერესებული",
+];
 const columns = [
   {
     title: "საიდენტიფიკაციო/კოდი ",
@@ -58,6 +69,7 @@ const columns = [
     title: "სტატუს",
     dataIndex: "status",
     key: "status",
+    sorter: true,
   },
   {
     title: "მენეჯერი",
@@ -67,7 +79,7 @@ const columns = [
   {
     title: "რეპორტის გენერაცია",
     dataIndex: "generate_excel",
-    key: "generate_excel"
+    key: "generate_excel",
   },
   {
     title: "რედაქტირება",
@@ -87,17 +99,32 @@ const Clinics = () => {
   const [render, setRender] = useState(true);
   const [show, setShow] = useState(false);
   const [deletableClinic, setDeletableClinic] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [users, setUsers] = useState([]);
+  const { RangePicker } = DatePicker;
+  const [form] = Form.useForm();
 
-  const getClinics = () => {
-    axios.get("api/clinics").then((res) => {
+  const getClinics = (params) => {
+    setLoading(true);
+    axios.get(`api/clinics`, { params: params }).then((res) => {
       if (res.data.status === "success") {
+        setLoading(false);
         setClincs(res.data.data);
+      }
+    });
+  };
+
+  const getUsers = () => {
+    axios.get("api/users").then((res) => {
+      if (res.data.status === "success") {
+        setUsers(res.data.data);
       }
     });
   };
 
   useEffect(() => {
     getClinics();
+    getUsers();
   }, [render]);
 
   const deleteClinic = () => {
@@ -133,55 +160,151 @@ const Clinics = () => {
   };
 
   const generateExcel = (clinic) => {
-    axios.post('api/clinics/generate', clinic).then(
-      res => {
+    axios.post("api/clinics/generate", clinic).then((res) => {});
+  };
 
-      } 
-    )
-  }
+  const getClinic = (id) => {
+    axios.get(`/api/clinics/${id}`).then((res) => {
+      if (res.data.status === "success") {
+        setClincs([res.data.data]);
+      }
+    });
+  };
+
+  const changeDate = (value) => {
+    if (value?.[0] && value?.[1]) {
+      getClinics({
+        start_date: value[0].startOf("day").toDate(),
+        end_date: value[1].endOf("day").toDate(),
+      });
+    } else {
+      getClinics();
+    }
+  };
+
+  const handleTableChange = (newPagination, filters, sorter) => {
+    getClinics({ field: sorter?.field, order: sorter?.order });
+  };
 
   return (
     <>
       <Space direction="vertical" size={"large"} className="clinic-table">
-        <div style={{display:'flex', justifyContent:'space-between'}}>
-        <Button
-          type="primary mb-3"
-          onClick={() => navigate("/clinics/register")}
-        >
-          კლინიკის რეგისტრაცია
-        </Button>
-        <Button
-          type="primary mb-3"
-          onClick={() => generateExcel(clinics)}
-        >
-          რეპორტის გენერაცია
-        </Button>
-        </div>
+        <Form form={form}>
+          <Space direction="vertical" size={"large"} className="clinic-table">
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <Button
+                type="primary mb-3"
+                onClick={() => navigate("/clinics/register")}
+              >
+                კლინიკის რეგისტრაცია
+              </Button>
+              <Form.Item name={'range'}>
+                <RangePicker
+                  format={"DD/MM/YYYY"}
+                  onChange={(value) => {changeDate(value);}}
+                  allowClear
+                />
+              </Form.Item>
+              <Button
+                type="primary mb-3"
+                onClick={() => generateExcel(clinics)}
+              >
+                რეპორტის გენერაცია
+              </Button>
+            </div>
 
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+            <Form.Item name={'manager'}>
+              <Select
+                placeholder="აირჩიე მენეჯერი"
+                allowClear
+                onSelect={(value) => getClinics({ manager: value })}
+                onClear={() => getClinics()}
+                onBlur={()=>form.resetFields('manager', null)}
+                >
+                {users?.map((user) => (
+                  <Select.Option value={user._id} key={user._id}>
+                    {user.name}
+                  </Select.Option>
+                ))}
+              </Select>
+              </Form.Item>
+              <Form.Item name='clinic'>
+              <Select
+                placeholder="აირჩიე კლინიკა"
+                allowClear
+                onSelect={(value) => getClinic(value)}
+                onClear={() => getClinics()}
+              >
+                {clinics?.map((clinic) => (
+                  <Select.Option value={clinic._id} key={clinic._id}>
+                    {clinic.name}
+                  </Select.Option>
+                ))}
+              </Select>
+              </Form.Item>
+              <Form.Item name='status'>
+              <Select
+                placeholder="აირჩიე სტატუსი"
+                allowClear
+                onSelect={(value) => {
+                  getClinics({ status: value });
+                }}
+                onClear={() => getClinics()}
+              >
+                {status?.map((stat) => (
+                  <Select.Option
+                    value={status.indexOf(stat) + 1}
+                    key={status.indexOf(stat) + 1}
+                  >
+                    {stat}
+                  </Select.Option>
+                ))}
+              </Select>
+              </Form.Item>
+              <Form.Item  name='expired'>
+              <Checkbox
+                onChange={(e) =>
+                  getClinics(
+                    e.target.checked
+                      ? {
+                          expired: true,
+                          start_date: moment(new Date(2001, 1, 1)).toDate(),
+                          end_date: moment().startOf("day").toDate(),
+                        }
+                      : ""
+                  )
+                }
+              >
+                ვადაგადაცილებულები
+              </Checkbox>
+              </Form.Item>
+            </div>
+          </Space>
+        </Form>
         <Table
           columns={columns}
           pagination={{
-            position: ['topLeft', 'bottomRight'],
-            pageSize: '5'
+            position: ["topLeft", "bottomRight"],
+            pageSize: "5",
           }}
+          loading={loading}
+          onChange={handleTableChange}
           dataSource={clinics?.map((clinic) => {
             return {
               key: clinic._id,
-              name: clinic.name,
+              name: <div>{clinic.name}</div>,
               identity_code: clinic.identity_code,
               phone_number: clinic.phone_number,
               contact_person_email: clinic.contact_person.email,
               contact_person_position: clinic.contact_person.position,
-              status: status[clinic.status-1],
+              status: status[clinic.status - 1],
               register_date: moment(clinic.register_date).format("DD/MM/YYYY"),
               contract_date: moment(clinic.contract_date).format("DD/MM/YYYY"),
               manager: clinic.manager_name,
               contact_person_phone: clinic.contact_person.phone_number,
               generate_excel: (
-                <Button
-                  type="success"
-                  onClick={() => generateExcel([clinic])}
-                >
+                <Button type="success" onClick={() => generateExcel([clinic])}>
                   რეპორტის გენერაცია
                 </Button>
               ),

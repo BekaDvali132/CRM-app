@@ -36,6 +36,7 @@ const generateExcel = (clinics) => {
   ws.column(9).setWidth(40)
   ws.column(10).setWidth(40)
   ws.column(11).setWidth(40)
+  ws.column(12).setWidth(60)
 
   ws.cell(1, 2).string('საიდენტიფიკაციო/კოდი').style(style);
   ws.cell(1, 3).string('ტელეფონის ნომერი').style(style);
@@ -47,9 +48,11 @@ const generateExcel = (clinics) => {
   ws.cell(1, 9).string("შემდეგი კონტაქტის თარიღი").style(style);
   ws.cell(1, 10).string("სტატუს").style(style);
   ws.cell(1, 11).string("მენეჯერი").style(style);
+  ws.cell(1, 12).string("კომენტარი").style(style);
 
   clinics?.map((clinic, index) => {
     clinic.status = status[clinic.status-1]
+    ws.row(index+2).setHeight(30)
 
     ws.cell(index+2, 2).string(clinic?.identity_code).style(style);
     ws.cell(index+2, 3).string(clinic?.phone_number).style(style);
@@ -61,6 +64,7 @@ const generateExcel = (clinics) => {
     ws.cell(index+2, 9).string(moment(clinic?.contract_date).format('DD/MM/YYYY')).style(style);
     ws.cell(index+2, 10).string(clinic?.status).style(style);
     ws.cell(index+2, 11).string(clinic?.manager_name).style(style);
+    ws.cell(index+2, 12).string(clinic?.comment).style(style);
   })
 
   wb.write("./resources/Excel.xlsx");

@@ -6,3 +6,7 @@
 .ant-table-content{
     overflow: auto;
 }
+
+.ant-pagination {
+    margin: 8px 0 !important;
+}
