@@ -4,6 +4,7 @@ const asyncHandler = require("express-async-handler");
 const User = require("../models/userModel");
 const Verify = require("../models/verifyModel");
 const { sendMail, sendCodeMail, sendNewPasswordMail } = require("../functions/sendEmail");
+const { generateExcel } = require("../functions/generateExcel");
 
 //@desc     Register new user
 //@route    POST /api/users
@@ -234,9 +235,7 @@ const loginUser = asyncHandler(async (req, res) => {
 //@route    Get /api/users/me
 //access    Private
 const getMe = asyncHandler(async (req, res) => {
-  const { _id, name, email } = await User.findById(req.user.id);
-
-  
+  const { _id, name, email,role } = await User.findById(req.user.id);  
 
   res.status(200).json({
     status: "success",
@@ -244,7 +243,7 @@ const getMe = asyncHandler(async (req, res) => {
       id: _id,
       name,
       email,
-      role: user.role,
+      role: role,
     },
   });
 

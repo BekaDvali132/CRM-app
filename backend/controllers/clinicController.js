@@ -5,6 +5,7 @@ const User = require("../models/userModel");
 const moment = require('moment')
 
 const { body, validationResult } = require('express-validator');
+const { generateExcel } = require("../functions/generateExcel");
 
 //@desc     Get Clinics
 //@route    GET /api/clinics
@@ -234,10 +235,21 @@ const deleteClinic = asyncHandler(async (req, res) => {
 }
 });
 
+const generateClinicsExcel = async (req,res) => {
+  
+  generateExcel(req.body)
+
+  res.status(200).json({ 
+    status: `success`,
+    data:req.body
+  });
+}
+
 module.exports = {
   getClinics,
   setClinic,
   updateClinic,
   deleteClinic,
-  getClinic
+  getClinic,
+  generateClinicsExcel
 };

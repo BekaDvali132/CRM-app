@@ -18,6 +18,7 @@ function App() {
   return (
     <UserContext.Provider value={user}>
       <Router>
+        <a download={true} href="/resources/Excel.xlsx" >excel</a>
         <div className="App">
           <Routes>
             <Route path="/login" element={<Login setUser={setUser}/>} />

@@ -65,6 +65,11 @@ const columns = [
     key: "manager",
   },
   {
+    title: "რეპორტის გენერაცია",
+    dataIndex: "generate_excel",
+    key: "generate_excel"
+  },
+  {
     title: "რედაქტირება",
     dataIndex: "edit",
     key: "edit",
@@ -127,15 +132,31 @@ const Clinics = () => {
     setDeletableClinic(null);
   };
 
+  const generateExcel = (clinic) => {
+    axios.post('api/clinics/generate', clinic).then(
+      res => {
+
+      } 
+    )
+  }
+
   return (
     <>
       <Space direction="vertical" size={"large"} className="clinic-table">
+        <div style={{display:'flex', justifyContent:'space-between'}}>
         <Button
           type="primary mb-3"
           onClick={() => navigate("/clinics/register")}
         >
           კლინიკის რეგისტრაცია
         </Button>
+        <Button
+          type="primary mb-3"
+          onClick={() => generateExcel(clinics)}
+        >
+          რეპორტის გენერაცია
+        </Button>
+        </div>
 
         <Table
           columns={columns}
@@ -154,8 +175,16 @@ const Clinics = () => {
               status: status[clinic.status-1],
               register_date: moment(clinic.register_date).format("DD/MM/YYYY"),
               contract_date: moment(clinic.contract_date).format("DD/MM/YYYY"),
-              manager: clinic.manager,
+              manager: clinic.manager_name,
               contact_person_phone: clinic.contact_person.phone_number,
+              generate_excel: (
+                <Button
+                  type="success"
+                  onClick={() => generateExcel([clinic])}
+                >
+                  რეპორტის გენერაცია
+                </Button>
+              ),
               edit: (
                 <Button
                   type="secondary"

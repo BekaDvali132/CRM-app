@@ -11,7 +11,7 @@ const RegisterClinic = () => {
   const navigate = useNavigate()
 
   const onFinish = (values) => {
-    values.manager = user._id
+    values.manager = user.id
     axios.post("/api/clinics", values).then((res) => {
       if (res.data.status === 'success') {
         navigate('/clinics')
