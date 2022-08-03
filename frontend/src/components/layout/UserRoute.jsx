@@ -6,7 +6,7 @@ import {
   LogoutOutlined,
   UserOutlined
 } from "@ant-design/icons";
-import { Affix, Layout, Menu } from "antd";
+import { Affix, Avatar, Layout, Menu, Tooltip } from "antd";
 import axios from "axios";
 import React, { useState } from "react";
 import { useEffect } from "react";
@@ -14,7 +14,6 @@ import { useContext } from "react";
 import { Outlet, useLocation, useNavigate, useParams } from "react-router-dom";
 import { UserContext } from "../hooks/contexts/UserContext";
 import "./UserRoute.css";
-
 const { Header, Sider, Content } = Layout;
 
 const UserRoute = ({setUser}) => {
@@ -69,8 +68,12 @@ const UserRoute = ({setUser}) => {
     <Layout>
       <Affix style={{minHeight:'100vh'}}>
       <Sider trigger={null} collapsible collapsed={collapsed} style={{minHeight:'100vh'}}>
-        <div className="logo" />
-        <h1>{user?.name}</h1>
+        <div className="logo" onClick={()=>navigate('/profile')}>
+        {/* <h1>{user?.name}</h1> */}
+        <Tooltip placement="right" title={user?.name} color={'#108ee9'}>
+          <Avatar size={40} icon={<UserOutlined/>} style={{cursor:'pointer'}}/>
+        </Tooltip>
+        </div>
         <Menu
           theme="dark"
           mode="inline"

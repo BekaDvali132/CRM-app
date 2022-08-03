@@ -426,6 +426,78 @@ const submitCode = async (req, res) => {
   }
 };
 
+const updateMe = async (req,res) => {
+  const { name, email, role, id, password, repeat_password } = req.body;
+
+  const errors = {};
+
+  // Check if something is missing
+
+  if (!name) {
+    errors.name = "გთხოვთ მიუთითოთ სახელი";
+  }
+  if (!email) {
+    errors.email = "გთხოვთ მიუთითოთ ელექტრონული ფოსტა";
+  }
+  if (!role) {
+    errors.role = "გთხოვთ მიუთითოთ მომხმარებლის როლი";
+  }
+  if (!password) {
+    errors.password = "გთხოვთ მიუთითოთ მომხმარებლის ახალი პაროლი";
+  }
+  if (!repeat_password) {
+    errors.repeat_password = "გთხოვთ ხელახლა მიუთითოთ მომხმარებლის ახალი პაროლი";
+  }
+  if (password !== repeat_password) {
+    errors.repeat_password = "მითითებული პაროლები არ ემთხვევიან";
+  }
+
+  if (Object.keys(errors).length > 0) {
+    res.json({
+      status: "unsuccess",
+      errors: errors,
+    });
+    return;
+  }
+
+  const user = await User.findById(id)
+
+  if (user) {
+
+    // Hash password
+  const salt = await bcrypt.genSalt(10);
+  const hashedPassword = await bcrypt.hash(password, salt);
+
+  // Update user
+    const updatedUser = await User.findByIdAndUpdate(user._id,{
+      name: name,
+      email: email,
+      password: hashedPassword,
+      role: role,
+    })
+
+    if (updatedUser) {
+      res.status(200).json({
+        status:'success',
+        data: user
+      })
+    }
+    
+    res.status(200).json({
+      status:'unsuccess',
+      data: user
+    })
+
+  } else {
+
+  }
+
+  res.status(200).json({
+    status:'success',
+    data: user
+  })
+}
+
 // Generate JWT
 
 const generateToken = (id) => {
@@ -444,4 +516,5 @@ module.exports = {
   editUser,
   sendCode,
   submitCode,
+  updateMe
 };

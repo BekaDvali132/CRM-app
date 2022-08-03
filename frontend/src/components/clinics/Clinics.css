@@ -10,3 +10,22 @@
 .ant-pagination {
     margin: 8px 0 !important;
 }
+
+.ant-space{
+    display: flex;
+}
+
+.ant-space-item>div>.ant-form-item {
+    flex: 1;
+    max-width: 400px;
+}
+
+.ant-space-item>div{
+    gap: 30px;
+}
+
+.logo{
+    display: flex;
+    justify-content: center;
+    padding: 10px 0;
+}

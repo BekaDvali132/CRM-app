@@ -3,7 +3,7 @@ const colors = require("colors");
 const dotenv = require("dotenv").config();
 const connectDB = require("./config/db");
 const port = process.env.PORT || 5000;
-const { getMe } = require("./controllers/userController");
+const { getMe, updateMe } = require("./controllers/userController");
 const { protect } = require("./middleware/authMiddleware");
 const cors = require("cors");
 const path = require("path");
@@ -30,7 +30,7 @@ app.use("/resources", express.static(path.join(__dirname, "./resources")));
 app.use(`/resources`, express.static("resources"));
 app.use("/api/clinics", require("./routes/clinicRoutes"));
 app.use("/api/users", require("./routes/userRoutes"));
-app.get("/api/user/me", protect, getMe);
+app.route("/api/user/me").get(protect, getMe).put(protect, updateMe)
 
 // Serve frontend
 

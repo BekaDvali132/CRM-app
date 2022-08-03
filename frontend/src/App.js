@@ -13,6 +13,7 @@ import EditUsers from "./components/users/EditUsers";
 import { useState } from "react";
 import axios from "axios";
 import PageScroll from "./components/pageScroll/PageScroll";
+import Profile from "./components/profile/Profile";
 
 function App() {
   const [user, setUser] = useState()
@@ -35,6 +36,7 @@ function App() {
             <Route path="/clinics/edit/:id" element={<EditClinic />}/>
             <Route path="/clinics/edit/:id" element={<Offers />}/>
             <Route path="/users" element={<Users />}/>
+            <Route path="/profile" element={<Profile />}/>
             <Route path="/users/register" element={<UsersRegister />}/>
             <Route path="/users/edit/:id" element={<EditUsers />}/>
             </Route>
