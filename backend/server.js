@@ -19,7 +19,10 @@ const app = express();
 
 app.use(compression())
 
-app.use(cors(corsOption));
+if (process.env.NODE_ENV !== 'production') {
+    app.use(cors(corsOption));
+}
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
