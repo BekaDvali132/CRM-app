@@ -17,9 +17,7 @@ import PageScroll from "./components/pageScroll/PageScroll";
 function App() {
   const [user, setUser] = useState()
 
-  if (process.env.NODE_ENV !== 'production') {
-    axios.defaults.baseURL = "http://localhost:5000";
-  }
+  axios.defaults.baseURL = "http://localhost:5000";
 
   return (
     <UserContext.Provider value={user}>
