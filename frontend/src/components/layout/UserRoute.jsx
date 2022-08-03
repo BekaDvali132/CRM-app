@@ -11,7 +11,7 @@ import axios from "axios";
 import React, { useState } from "react";
 import { useEffect } from "react";
 import { useContext } from "react";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useLocation, useNavigate, useParams } from "react-router-dom";
 import { UserContext } from "../hooks/contexts/UserContext";
 import "./UserRoute.css";
 
@@ -22,8 +22,10 @@ const UserRoute = ({setUser}) => {
   const navigate = useNavigate();
   const user = useContext(UserContext);
 
+  const location = useLocation()
+
   axios.interceptors.request.use(function (config) {
-    const bearer = user?.token || JSON.parse(localStorage.getItem('user'))?.id || '';
+    const bearer = user?.token || localStorage.getItem('token') || '';
 
     config.headers.authorization = "Bearer " + bearer;
     return config;
@@ -35,15 +37,16 @@ const UserRoute = ({setUser}) => {
     },
     function (error) {
       if (error?.response?.status === 401) {
-        setUser('')
-        localStorage.setItem('name','')
+        setUser(null)
+        localStorage.removeItem('token')
         navigate("/login");
       }
     }
   );
 
-  const logOut = () => {
-    localStorage.removeItem('user')
+  const logOut = async () => {
+    localStorage.removeItem('token')
+    await setUser(null);
     navigate('/login')
   }
 
@@ -52,25 +55,14 @@ const UserRoute = ({setUser}) => {
       .get(`/api/user/me`, {
         headers: {
           authorization:
-            "Bearer " + JSON.parse(localStorage.getItem("user"))?.token,
+            "Bearer " + localStorage.getItem("token"),
         },
       })
-      .then((res) => {
+      .then(async (res) => {
         if (res?.data?.status === "success") {
-          localStorage.setItem(
-            "user",
-            JSON.stringify({ ...res?.data?.data, token: user?.token })
-          );
+          await setUser(res.data.data)
         }
       });
-
-    // axios.interceptors.response.use(function (response) {
-    //   return response;
-    // }, function (error) {
-    //   if (error?.response?.status === 401 || error.response.status === 419) {
-    //     navigate('/login')
-    //   } else return Promise.reject(error);
-    // });
   }, []);
 
   return (
@@ -82,21 +74,21 @@ const UserRoute = ({setUser}) => {
         <Menu
           theme="dark"
           mode="inline"
-          defaultSelectedKeys={["1"]}
+          defaultSelectedKeys={[location.pathname=='/' ? "2" : location.pathname=='/clinics' ? '1' : '3']}
           items={[
             {
               key: "1",
               icon: <MedicineBoxOutlined />,
               label: "კლინიკები",
-              onClick: ()=>navigate('/clinics')
+              onClick: ()=>navigate('/clinics'),
             },
             {
               key: "2",
               icon: <InfoCircleOutlined />,
               label: "შეთავაზებები",
-              onClick: ()=>navigate('/clinics')
+              onClick: ()=>navigate('/')
             },
-            user.role === 1 && {
+            user?.role === 1 && {
               key: "3",
               icon: <UserOutlined />,
               label: "მომხმარებლები",

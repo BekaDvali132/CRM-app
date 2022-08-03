@@ -12,20 +12,22 @@ import UsersRegister from "./components/users/UsersRegister";
 import EditUsers from "./components/users/EditUsers";
 import { useState } from "react";
 import axios from "axios";
+import PageScroll from "./components/pageScroll/PageScroll";
 
 function App() {
-  const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')))
+  const [user, setUser] = useState()
 
   axios.defaults.baseURL = "http://localhost:5000";
 
   return (
     <UserContext.Provider value={user}>
       <Router>
-        <a download={true} href="/CRM/resources/Excel.xlsx" >excel</a>
+      <PageScroll/>
         <div className="App">
           <Routes>
             <Route path="/login" element={<Login setUser={setUser}/>} />
             <Route path="/" element={<UserRoute setUser={setUser}/>}>
+            <Route path="/" element={<Clinics />}/>
             <Route path="/clinics" element={<Clinics />}/>
             <Route path="/clinics/register" element={<RegisterClinic />}/>
             <Route path="/clinics/edit/:id" element={<EditClinic />}/>

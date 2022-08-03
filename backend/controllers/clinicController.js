@@ -59,6 +59,7 @@ const getClinics = asyncHandler(async (req, res) => {
       }).sort([[req.query.field, req.query.order == "ascend" ? 1 : -1]]);
     } else if (req.query.start_date && req.query.end_date) {
       clinics = await Clinic.find({
+        manager: req.user.id,
         register_date: {
           $gte: req.query.start_date,
           $lte: req.query.end_date,
@@ -66,14 +67,17 @@ const getClinics = asyncHandler(async (req, res) => {
       });
     } else if (req.query.manager) {
       clinics = await Clinic.find({
+        manager: req.user.id,
         manager: req.query.manager,
       });
     } else if (req.query.status) {
       clinics = await Clinic.find({
+        manager: req.user.id,
         status: req.query.status,
       });
     } else if (req.query.expired) {
       clinics = await Clinic.find({
+        manager: req.user.id,
         contract_date: {
           $lte: moment().toDate(),
         },

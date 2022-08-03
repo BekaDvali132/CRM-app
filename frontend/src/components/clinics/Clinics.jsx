@@ -29,52 +29,58 @@ const columns = [
     title: "საიდენტიფიკაციო/კოდი ",
     dataIndex: "identity_code",
     key: "identity_code",
+    sorter: true
   },
   {
     title: "ტელეფონის ნომერი",
     dataIndex: "phone_number",
     key: "phone_number",
+    sorter: true
   },
   {
     title: "კლინიკის დასახელება",
     dataIndex: "name",
     key: "name",
+    sorter: true
   },
   {
     title: "საკონტაქტო პირის ტელეფონის ნომერი",
     dataIndex: "contact_person_phone",
-    key: "contact_person_phone",
+    key: "contact_person_phone"
   },
   {
     title: "საკონტაქტო პირის ელ.ფოსტა",
     dataIndex: "contact_person_email",
-    key: "contact_person_email",
+    key: "contact_person_email"
   },
   {
     title: "საკონტაქტო პირის პოზიცია",
     dataIndex: "contact_person_position",
-    key: "contact_person_position",
+    key: "contact_person_position"
   },
   {
     title: "რეგისტრაციის თარიღი",
     dataIndex: "register_date",
     key: "register_date",
+    sorter: true
   },
   {
     title: "შემდეგი კონტაქტის თარიღი",
     dataIndex: "contract_date",
     key: "contract_date",
+    sorter: true
   },
   {
     title: "სტატუს",
     dataIndex: "status",
     key: "status",
-    sorter: true,
+    sorter: true
   },
   {
     title: "მენეჯერი",
     dataIndex: "manager",
     key: "manager",
+    sorter: true
   },
   {
     title: "რეპორტის გენერაცია",
@@ -207,6 +213,7 @@ const Clinics = () => {
                   format={"DD/MM/YYYY"}
                   onChange={(value) => {
                     changeDate(value);
+                    form.resetFields(['manager','clinic','status','expired'])
                   }}
                   allowClear
                 />
@@ -224,9 +231,8 @@ const Clinics = () => {
                 <Select
                   placeholder="აირჩიე მენეჯერი"
                   allowClear
-                  onSelect={(value) => getClinics({ manager: value })}
+                  onSelect={(value) => {getClinics({ manager: value });form.resetFields(['range','clinic','status','expired'])}}
                   onClear={() => getClinics()}
-                  onBlur={() => form.resetFields("manager", null)}
                 >
                   {users?.map((user) => (
                     <Select.Option value={user._id} key={user._id}>
@@ -239,7 +245,7 @@ const Clinics = () => {
                 <Select
                   placeholder="აირჩიე კლინიკა"
                   allowClear
-                  onSelect={(value) => getClinic(value)}
+                  onSelect={(value) => {getClinic(value);form.resetFields(['manager','range','status','expired'])}}
                   onClear={() => getClinics()}
                 >
                   {clinics?.map((clinic) => (
@@ -255,6 +261,7 @@ const Clinics = () => {
                   allowClear
                   onSelect={(value) => {
                     getClinics({ status: value });
+                    form.resetFields(['manager','clinic','range','expired'])
                   }}
                   onClear={() => getClinics()}
                 >
@@ -270,7 +277,7 @@ const Clinics = () => {
               </Form.Item>
               <Form.Item name="expired">
                 <Checkbox
-                  onChange={(e) =>
+                  onChange={(e) =>{
                     getClinics(
                       e.target.checked
                         ? {
@@ -280,7 +287,8 @@ const Clinics = () => {
                           }
                         : ""
                     )
-                  }
+                    form.resetFields(['manager','clinic','status','status'])
+                  }}
                 >
                   ვადაგადაცილებულები
                 </Checkbox>

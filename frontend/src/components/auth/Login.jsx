@@ -16,11 +16,11 @@ const Login = ({ setUser }) => {
   const [email, setEmail] = useState();
 
   const onFinish = (values) => {
-    axios.post("api/users/login", values).then((res) => {
+    axios.post("api/users/login", values).then(async (res) => {
       if (res.data?.status === "success") {
         setErrors(null);
-        setUser(res.data.data);
-        localStorage.setItem("user", JSON.stringify(res?.data?.data));
+        await setUser(res.data.data);
+        localStorage.setItem("token", res?.data?.data?.token);
         navigate("/");
       } else {
         setErrors(res.data?.errors);
@@ -68,19 +68,19 @@ const Login = ({ setUser }) => {
       .get("api/users/me", {
         headers: {
           Authorization:
-            "Bearer " + JSON.parse(localStorage.getItem("user"))?.token,
+            "Bearer " + JSON.parse(localStorage.getItem("token")),
         },
       })
       .then((res) => {
         if (res?.data?.status === "success") {
-          localStorage.setItem("user", JSON.stringify(res?.data?.data));
+          localStorage.setItem("token", JSON.stringify(res?.data?.data?.token));
           navigate("/");
         }
       });
   };
 
   useEffect(() => {
-    if (localStorage.getItem("user")) {
+    if (localStorage.getItem("token")) {
       getMe();
     }
   }, []);
