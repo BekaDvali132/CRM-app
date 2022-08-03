@@ -46,13 +46,16 @@ const Users = () => {
     const [deletableUser, setDeletableUser] = useState()
     const [users, setUsers] = useState([])
     const userInfo = useContext(UserContext)
+    const [loading, setLoading] = useState(false);
 
     const navigate = useNavigate()
 
     useEffect(()=>{
+      setLoading(true)
         axios.get('/api/users').then(res=> {
             if (res.data?.status==='success') {
-                setUsers(res.data.data)
+                setUsers(res.data.data);
+                setLoading(false);
             } else{
 
             }
@@ -63,6 +66,7 @@ const Users = () => {
 
     setDeletableUser(null);
     setShow(false);
+    setLoading(true)
 
     notification.destroy();
     message.loading({
@@ -83,6 +87,7 @@ const Users = () => {
             message: "მომხმარებელი ვერ წაიშალა",
           });
         }
+        setLoading(false)
       });
     }
 
@@ -108,6 +113,7 @@ const Users = () => {
             position: ["topLeft", "bottomRight"],
             pageSize: "5",
           }}
+          loading={loading}
           dataSource={users?.filter(user=>user._id!==userInfo?.id)?.map((user) => {
             return {
               key: user._id,
