@@ -10,6 +10,7 @@ import { UserContext } from "../hooks/contexts/UserContext";
 const EditClinic = () => {
   const [errors, setErrors] = useState();
   const [fields, setFields] = useState([]);
+  const [users, setUsers] = useState([]);
   const user = useContext(UserContext);
   const navigate = useNavigate();
   const { id } = useParams();
@@ -22,24 +23,22 @@ const EditClinic = () => {
             if (res.data.status === 'success') {
               res.data.data.contract_date = moment(res.data.data.contract_date)
               res.data.data.register_date = moment(res.data.data.register_date)
-
               form.setFieldsValue(res.data.data)
-              // Object.keys(res.data.data).forEach(key => {
-              //   setFields(current => [...current,{
-              //       name: [
-              //         key
-              //       ],
-              //       value: res.data.data?.[key]
-              //     }])
-              //   });
               setFields(res.data.data)
             }
         }
     );
+    axios.get('/api/users').then(
+      res => {
+        if (res.data.status==='success') {
+          setUsers(res.data.data)
+        }
+      }
+    )
   }, []);
 
   const onFinish = (values) => {
-    values.manager = fields?.manager;
+    values.manager = users?.find(user=>user?.name === values.manager_name?.split(' ')[0])?._id;
     values.id = id;
     axios.put(`/api/clinics/${id}`, values).then((res) => {
       if (res.data.status === "success") {
@@ -188,12 +187,16 @@ const EditClinic = () => {
           validateStatus={errors?.manager_name ? `error` : ""}
           help={errors?.manager_name}
         >
-          <Input
-            placeholder="შეიყვანეთ მენეჯერი"
+          <Select
+            placeholder="აირჩიეთ მენეჯერი"
+            allowClear
             id={errors?.manager ? `error` : ""}
-            disabled
-          />
+            disabled={user?.role !== 1}
+          >
+            {users?.map(user => <Select.Option value={user?.name + ' ' + user?.surname}>{user?.name + ' ' + user?.surname}</Select.Option>)}
+          </Select>
         </Form.Item>
+        
         <Form.Item
           label="კომენტარი"
           name="comment"

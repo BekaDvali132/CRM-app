@@ -16,3 +16,7 @@ form.login-form {
     bottom: 100px;
     width: 100%;
 }
+
+form.login-form.error{
+    border-color: red;
+}

@@ -115,7 +115,7 @@ const Login = ({ setUser }) => {
         </Form>
       </Modal>
 
-      <Form layout={"vertical"} onFinish={onFinish} className={"login-form"}>
+      <Form layout={"vertical"} onFinish={onFinish} className={`login-form ${errors && 'error'}`}>
         <Form.Item
           label="ელ.ფოსტა"
           name="email"
