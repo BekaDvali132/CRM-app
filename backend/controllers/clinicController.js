@@ -3,7 +3,7 @@ const asyncHandler = require("express-async-handler");
 const Clinic = require("../models/clinicModel");
 const User = require("../models/userModel");
 const moment = require("moment");
-
+const fs = require('fs')
 const { body, validationResult } = require("express-validator");
 const { generateExcel } = require("../functions/generateExcel");
 
@@ -320,12 +320,7 @@ const deleteClinic = asyncHandler(async (req, res) => {
 });
 
 const generateClinicsExcel = async (req, res) => {
-  generateExcel(req.body,res);
-
-  res.status(200).json({
-    status: `success`,
-    data: 'http://localhost:5000/resources/report.xlsx',
-  });
+  await generateExcel(req.body,res);
 };
 
 module.exports = {

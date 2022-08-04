@@ -32,7 +32,7 @@ const Profile = () => {
     <Space size={"large"} direction="vertical" style={{ width: "100%" }}>
       <ArrowLeftOutlined
         style={{ fontSize: "20px" }}
-        onClick={() => navigate("/users")}
+        onClick={() => navigate("/")}
       />
       <Form
         layout={"vertical"}
@@ -54,6 +54,7 @@ const Profile = () => {
           <Input
             placeholder="შეიყვანეთ მომხმარებლის დასახელება"
             id={errors?.name ? `error` : ""}
+            disabled
           />
         </Form.Item>
         <Form.Item
@@ -70,6 +71,7 @@ const Profile = () => {
           <Input
             placeholder="შეიყვანეთ მომხმარებლის ელ.ფოსტა"
             id={errors?.email ? `error` : ""}
+            disabled
           />
         </Form.Item>
         <Form.Item
@@ -82,6 +84,7 @@ const Profile = () => {
             placeholder="აირჩიე მომხმარებლის როლი"
             allowClear
             id={errors?.role ? `error` : ""}
+            disabled
           >
             <Select.Option value={1}>ადმინისტრატორი</Select.Option>
             <Select.Option value={2}>მენეჯერი</Select.Option>

@@ -56,7 +56,9 @@ const Users = () => {
             if (res.data?.status==='success') {
                 setUsers(res.data.data);
                 setLoading(false);
-            } else{
+            } else {
+
+              navigate('/')
 
             }
         })
