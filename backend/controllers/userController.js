@@ -234,7 +234,7 @@ const loginUser = asyncHandler(async (req, res) => {
     res.json({
       status: "unsuccess",
       errors: {
-        name: "მომხმარებელი ამ დასახელებით ვერ მოიძებნა",
+        email: "მომხმარებელი ამ ელ.ფოსტით ვერ მოიძებნა",
       },
     });
   }
