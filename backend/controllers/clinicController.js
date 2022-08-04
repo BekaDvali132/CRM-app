@@ -15,7 +15,7 @@ const getClinics = asyncHandler(async (req, res) => {
 
   let clinics;
 
-  if (role.role === 1) {
+  if (role) {
     if (req.query.order && req.query.field) {
       clinics = await Clinic.find({}).sort([
         [req.query.field, req.query.order == "ascend" ? 1 : -1],
@@ -53,40 +53,12 @@ const getClinics = asyncHandler(async (req, res) => {
       clinics = await Clinic.find({});
     }
   } else {
-    if (req.query.order && req.query.field) {
-      clinics = await Clinic.find({
-        manager: req.user.id,
-      }).sort([[req.query.field, req.query.order == "ascend" ? 1 : -1]]);
-    } else if (req.query.start_date && req.query.end_date) {
-      clinics = await Clinic.find({
-        manager: req.user.id,
-        register_date: {
-          $gte: req.query.start_date,
-          $lte: req.query.end_date,
-        },
-      });
-    } else if (req.query.manager) {
-      clinics = await Clinic.find({
-        manager: req.user.id,
-        manager: req.query.manager,
-      });
-    } else if (req.query.status) {
-      clinics = await Clinic.find({
-        manager: req.user.id,
-        status: req.query.status,
-      });
-    } else if (req.query.expired) {
-      clinics = await Clinic.find({
-        manager: req.user.id,
-        contract_date: {
-          $lte: moment().toDate(),
-        },
-      });
-    } else {
-      clinics = await Clinic.find({
-        manager: req.user.id,
-      });
-    }
+
+    res.status(200).json({
+      status: "unsuccess",
+      message: 'თქვენ არ გაქვთ კლინიკების ნახვის უფლება',
+    });
+
   }
 
   res.status(200).json({
@@ -160,6 +132,12 @@ const setClinic = asyncHandler(async (req, res) => {
 
   if (clinicExists.length !== 0) {
     errors.phone_number = `კლინიკა მითითებული ტელეფონის ნომრით უკვე არსებობს`;
+  }
+
+  const clinicIdentityExists = await Clinic.find({ identity_code: identity_code });
+
+  if (clinicIdentityExists.length !== 0) {
+    errors.identity_code = `კლინიკა მითითებული საიდენტიფიკაციო ნომრით უკვე არსებობს`;
   }
 
   if (Object.keys(errors).length > 0) {

@@ -12,9 +12,11 @@ import {
 } from "antd";
 import axios from "axios";
 import moment from "moment";
+import { useContext } from "react";
 import { useState } from "react";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { UserContext } from "../hooks/contexts/UserContext";
 import "./Clinics.css";
 
 const status = [
@@ -23,80 +25,6 @@ const status = [
   "წაგებული",
   "დაკონტრაქტებული",
   "არ არის დაინტერესებული",
-];
-const columns = [
-  {
-    title: "საიდენტიფიკაციო/კოდი ",
-    dataIndex: "identity_code",
-    key: "identity_code",
-    sorter: true
-  },
-  {
-    title: "ტელეფონის ნომერი",
-    dataIndex: "phone_number",
-    key: "phone_number",
-    sorter: true
-  },
-  {
-    title: "კლინიკის დასახელება",
-    dataIndex: "name",
-    key: "name",
-    sorter: true
-  },
-  {
-    title: "საკონტაქტო პირის ტელეფონის ნომერი",
-    dataIndex: "contact_person_phone",
-    key: "contact_person_phone"
-  },
-  {
-    title: "საკონტაქტო პირის ელ.ფოსტა",
-    dataIndex: "contact_person_email",
-    key: "contact_person_email"
-  },
-  {
-    title: "საკონტაქტო პირის პოზიცია",
-    dataIndex: "contact_person_position",
-    key: "contact_person_position"
-  },
-  {
-    title: "რეგისტრაციის თარიღი",
-    dataIndex: "register_date",
-    key: "register_date",
-    sorter: true
-  },
-  {
-    title: "შემდეგი კონტაქტის თარიღი",
-    dataIndex: "contract_date",
-    key: "contract_date",
-    sorter: true
-  },
-  {
-    title: "სტატუს",
-    dataIndex: "status",
-    key: "status",
-    sorter: true
-  },
-  {
-    title: "მენეჯერი",
-    dataIndex: "manager",
-    key: "manager",
-    sorter: true
-  },
-  {
-    title: "რეპორტის გენერაცია",
-    dataIndex: "generate_excel",
-    key: "generate_excel",
-  },
-  {
-    title: "რედაქტირება",
-    dataIndex: "edit",
-    key: "edit",
-  },
-  {
-    title: "წაშლა",
-    dataIndex: "delete",
-    key: "delete",
-  },
 ];
 
 const Clinics = () => {
@@ -109,6 +37,7 @@ const Clinics = () => {
   const [users, setUsers] = useState([]);
   const { RangePicker } = DatePicker;
   const [form] = Form.useForm();
+  const user = useContext(UserContext)
 
   const getClinics = (params) => {
     setLoading(true);
@@ -208,6 +137,99 @@ const Clinics = () => {
     getClinics({ field: sorter?.field, order: sorter?.order });
   };
 
+  const columns = [
+    {
+      title: "საიდენტიფიკაციო/კოდი ",
+      dataIndex: "identity_code",
+      key: "identity_code",
+      sorter: true
+    },
+    {
+      title: "ტელეფონის ნომერი",
+      dataIndex: "phone_number",
+      key: "phone_number",
+      sorter: true
+    },
+    {
+      title: "კლინიკის დასახელება",
+      dataIndex: "name",
+      key: "name",
+      sorter: true
+    },
+    {
+      title: "საკონტაქტო პირის ტელეფონის ნომერი",
+      dataIndex: "contact_person_phone",
+      key: "contact_person_phone"
+    },
+    {
+      title: "საკონტაქტო პირის ელ.ფოსტა",
+      dataIndex: "contact_person_email",
+      key: "contact_person_email"
+    },
+    {
+      title: "საკონტაქტო პირის პოზიცია",
+      dataIndex: "contact_person_position",
+      key: "contact_person_position"
+    },
+    {
+      title: "რეგისტრაციის თარიღი",
+      dataIndex: "register_date",
+      key: "register_date",
+      sorter: true
+    },
+    {
+      title: "შემდეგი კონტაქტის თარიღი",
+      dataIndex: "contract_date",
+      key: "contract_date",
+      sorter: true
+    },
+    {
+      title: "სტატუს",
+      dataIndex: "status",
+      key: "status",
+      sorter: true
+    },
+    {
+      title: "მენეჯერი",
+      dataIndex: "manager",
+      key: "manager",
+      sorter: true
+    },
+    {
+      title: "რეპორტის გენერაცია",
+      dataIndex: "generate_excel",
+      key: "generate_excel",
+    },
+    {
+      title: "რედაქტირება",
+      dataIndex: "edit",
+      key: "edit",
+    },
+    {
+      title: "წაშლა",
+      dataIndex: "delete",
+      key: "delete",
+    },
+  ];
+
+  const checkPermission = (clinic) => {
+
+    if (user?.role !== 1) {
+
+      if (user?.id !== clinic?.manager) {
+         return true;
+      } else {
+        return false;
+      }
+      
+    } else {
+
+      return false;
+
+    }
+
+  }
+
   return (
     <>
       <Space direction="vertical" size={"large"} className="clinic-table">
@@ -247,8 +269,8 @@ const Clinics = () => {
                   onClear={() => getClinics()}
                 >
                   {users?.map((user) => (
-                    <Select.Option value={user._id} key={user._id}>
-                      {user.name}
+                    <Select.Option value={user?._id} key={user?._id}>
+                      {user?.name}
                     </Select.Option>
                   ))}
                 </Select>
@@ -330,13 +352,14 @@ const Clinics = () => {
               manager: clinic.manager_name,
               contact_person_phone: clinic.contact_person.phone_number,
               generate_excel: (
-                <Button type="success" onClick={() => generateExcel([clinic])}>
+                <Button type="success" disabled={checkPermission(clinic)} onClick={() => generateExcel([clinic])}>
                   რეპორტის გენერაცია
                 </Button>
               ),
               edit: (
                 <Button
                   type="secondary"
+                  disabled={checkPermission(clinic)} 
                   onClick={() => navigate(`/clinics/edit/${clinic._id}`)}
                 >
                   რედაქტირება
@@ -349,6 +372,7 @@ const Clinics = () => {
                     setShow(true);
                     setDeletableClinic(clinic);
                   }}
+                  disabled={checkPermission(clinic)} 
                 >
                   წაშლა
                 </Button>
