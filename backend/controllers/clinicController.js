@@ -87,12 +87,11 @@ const setClinic = asyncHandler(async (req, res) => {
     identity_code,
     phone_number,
     name,
-    contact_person,
     status,
     register_date,
     contract_date,
-    comment,
     manager,
+    manager_name
   } = req.body;
 
   const errors = {};

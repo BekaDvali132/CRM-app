@@ -147,7 +147,7 @@ const RegisterClinic = () => {
           name="manager_name"
           validateStatus={errors?.manager ? `error` : ""}
           help={errors?.manager}
-          initialValue={user.name}
+          initialValue={user?.name + ' ' + user?.surname}
         >
           <Input
             placeholder="შეიყვანეთ მენეჯერი"

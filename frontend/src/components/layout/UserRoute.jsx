@@ -69,7 +69,7 @@ const UserRoute = ({setUser}) => {
       <Affix style={{minHeight:'100vh'}}>
       <Sider trigger={null} collapsible collapsed={collapsed} style={{minHeight:'100vh'}}>
         <div className="logo" onClick={()=>navigate('/profile')}>
-        <Tooltip placement="right" title={user?.name} color={'#108ee9'}>
+        <Tooltip placement="right" title={user?.name + ' ' + user?.surname} color={'#108ee9'}>
           <Avatar size={40} icon={<UserOutlined/>} style={{cursor:'pointer'}}/>
         </Tooltip>
         </div>

@@ -30,10 +30,6 @@ const Profile = () => {
 
   return (
     <Space size={"large"} direction="vertical" style={{ width: "100%" }}>
-      <ArrowLeftOutlined
-        style={{ fontSize: "20px" }}
-        onClick={() => navigate("/")}
-      />
       <Form
         layout={"vertical"}
         onFinish={onFinish}
@@ -54,6 +50,23 @@ const Profile = () => {
           <Input
             placeholder="შეიყვანეთ მომხმარებლის დასახელება"
             id={errors?.name ? `error` : ""}
+            disabled
+          />
+        </Form.Item>
+        <Form.Item
+          label="*მომხმარებლის გვარი"
+          name="surname"
+          validateStatus={errors?.surname ? `error` : ""}
+          rules={[
+            {
+              required: false,
+            },
+          ]}
+          help={errors?.surname}
+        >
+          <Input
+            placeholder="შეიყვანეთ მომხმარებლის გვარი"
+            id={errors?.surname ? `error` : ""}
             disabled
           />
         </Form.Item>

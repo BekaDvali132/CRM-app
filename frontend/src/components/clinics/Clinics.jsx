@@ -29,6 +29,7 @@ const status = [
 
 const Clinics = () => {
   const [clinics, setClincs] = useState([]);
+  const [allClinics, setAllClincs] = useState([]);
   const navigate = useNavigate();
   const [render, setRender] = useState(true);
   const [show, setShow] = useState(false);
@@ -45,6 +46,7 @@ const Clinics = () => {
       if (res.data.status === "success") {
         setLoading(false);
         setClincs(res.data.data);
+        !params && setAllClincs(res.data.data)
       }
     });
   };
@@ -271,7 +273,7 @@ const Clinics = () => {
                 >
                   {users?.map((user) => (
                     <Select.Option value={user?._id} key={user?._id}>
-                      {user?.name}
+                      {user?.name + ' ' + user?.surname}
                     </Select.Option>
                   ))}
                 </Select>
@@ -283,7 +285,7 @@ const Clinics = () => {
                   onSelect={(value) => {getClinic(value);form.resetFields(['manager','range','status','expired'])}}
                   onClear={() => getClinics()}
                 >
-                  {clinics?.map((clinic) => (
+                  {allClinics?.map((clinic) => (
                     <Select.Option value={clinic._id} key={clinic._id}>
                       {clinic.name}
                     </Select.Option>

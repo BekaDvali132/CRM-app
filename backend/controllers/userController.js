@@ -219,6 +219,7 @@ const loginUser = asyncHandler(async (req, res) => {
         _id: user.id,
         name: user.name,
         email: user.email,
+        surname: user.surname,
         role: user.role,
         token: generateToken(user._id),
       },
@@ -244,7 +245,7 @@ const loginUser = asyncHandler(async (req, res) => {
 //@route    Get /api/users/me
 //access    Private
 const getMe = asyncHandler(async (req, res) => {
-  const { _id, name, email,role } = await User.findById(req.user.id);  
+  const { _id, name, email, role, surname } = await User.findById(req.user.id);  
 
   res.status(200).json({
     status: "success",
@@ -252,6 +253,7 @@ const getMe = asyncHandler(async (req, res) => {
       id: _id,
       name,
       email,
+      surname,
       role: role,
     },
   });
