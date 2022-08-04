@@ -22,14 +22,6 @@ const EditUsers = () => {
         res => {
             if (res.data.status === 'success') {
               form.setFieldsValue(res.data.data)
-              // Object.keys(res.data.data).forEach(key => {
-              //   setFields(current => [...current,{
-              //       name: [
-              //         key
-              //       ],
-              //       value: res.data.data?.[key]
-              //     }])
-              //   });
               setFields(res.data.data)
             }
         }
@@ -62,7 +54,7 @@ const EditUsers = () => {
         form={form}
       >
         <Form.Item
-          label="*მომხმარებლის დასახელება"
+          label="*მომხმარებლის სახელი"
           name="name"
           validateStatus={errors?.name ? `error` : ""}
           rules={[
@@ -73,8 +65,24 @@ const EditUsers = () => {
           help={errors?.name}
         >
           <Input
-            placeholder="შეიყვანეთ მომხმარებლის დასახელება"
+            placeholder="შეიყვანეთ მომხმარებლის სახელი"
             id={errors?.name ? `error` : ""}
+          />
+        </Form.Item>
+        <Form.Item
+          label="*მომხმარებლის გვარი"
+          name="surname"
+          validateStatus={errors?.surname ? `error` : ""}
+          rules={[
+            {
+              required: false,
+            },
+          ]}
+          help={errors?.surname}
+        >
+          <Input
+            placeholder="შეიყვანეთ მომხმარებლის გვარი"
+            id={errors?.surname ? `error` : ""}
           />
         </Form.Item>
         <Form.Item
@@ -110,7 +118,7 @@ const EditUsers = () => {
         </Form.Item>
         <Form.Item>
           <Button type="primary" htmlType="submit">
-            Submit
+          შენახვა
           </Button>
         </Form.Item>
       </Form>

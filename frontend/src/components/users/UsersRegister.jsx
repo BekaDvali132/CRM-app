@@ -30,7 +30,7 @@ const UsersRegister = () => {
     <Space size={"large"} direction="vertical" style={{ width: "100%" }}>
       <ArrowLeftOutlined
         style={{ fontSize: "20px" }}
-        onClick={() => navigate("/clinics")}
+        onClick={() => navigate("/users")}
       />
       <Form
         layout={"vertical"}
@@ -38,7 +38,7 @@ const UsersRegister = () => {
         style={{ maxWidth: "750px", margin: "auto" }}
       >
         <Form.Item
-          label="*მომხმარებლის დასახელება"
+          label="*მომხმარებლის სახელი"
           name="name"
           validateStatus={errors?.name ? `error` : ""}
           rules={[
@@ -49,8 +49,24 @@ const UsersRegister = () => {
           help={errors?.name}
         >
           <Input
-            placeholder="შეიყვანეთ მომხმარებლის დასახელება"
+            placeholder="შეიყვანეთ მომხმარებლის სახელი"
             id={errors?.name ? `error` : ""}
+          />
+        </Form.Item>
+        <Form.Item
+          label="*მომხმარებლის გვარი"
+          name="surname"
+          validateStatus={errors?.surname ? `error` : ""}
+          rules={[
+            {
+              required: false,
+            },
+          ]}
+          help={errors?.surname}
+        >
+          <Input
+            placeholder="შეიყვანეთ მომხმარებლის გვარი"
+            id={errors?.surname ? `error` : ""}
           />
         </Form.Item>
         <Form.Item
@@ -86,7 +102,7 @@ const UsersRegister = () => {
         </Form.Item>
         <Form.Item>
           <Button type="primary" htmlType="submit">
-            Submit
+          შენახვა
           </Button>
         </Form.Item>
       </Form>

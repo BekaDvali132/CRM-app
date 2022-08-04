@@ -255,6 +255,7 @@ const Clinics = () => {
               <Button
                 type="primary mb-3"
                 onClick={() => generateExcel(clinics)}
+                disabled={checkPermission()}
               >
                 რეპორტის გენერაცია
               </Button>

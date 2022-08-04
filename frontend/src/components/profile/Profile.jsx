@@ -124,7 +124,7 @@ const Profile = () => {
         </Form.Item>
         <Form.Item>
           <Button type="primary" htmlType="submit">
-            Submit
+          შენახვა
           </Button>
         </Form.Item>
       </Form>

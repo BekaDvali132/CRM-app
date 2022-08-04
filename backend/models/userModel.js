@@ -5,6 +5,10 @@ const userSchema = mongoose.Schema({
         type: String,
         required: [true, 'გთხოვთ მიუთითოთ სახელი']
     },
+    surname: {
+        type: String,
+        required: [true, 'გთხოვთ მიუთითოთ გვარი']
+    },
     email: {
         type: String,
         required: [true, 'გთხოვთ მიუთითოთ ელექტრონული ფოსტა']

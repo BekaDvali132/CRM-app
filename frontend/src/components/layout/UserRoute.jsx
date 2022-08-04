@@ -69,7 +69,6 @@ const UserRoute = ({setUser}) => {
       <Affix style={{minHeight:'100vh'}}>
       <Sider trigger={null} collapsible collapsed={collapsed} style={{minHeight:'100vh'}}>
         <div className="logo" onClick={()=>navigate('/profile')}>
-        {/* <h1>{user?.name}</h1> */}
         <Tooltip placement="right" title={user?.name} color={'#108ee9'}>
           <Avatar size={40} icon={<UserOutlined/>} style={{cursor:'pointer'}}/>
         </Tooltip>
@@ -77,7 +76,6 @@ const UserRoute = ({setUser}) => {
         <Menu
           theme="dark"
           mode="inline"
-          defaultSelectedKeys={[location.pathname=='/' ? "2" : location.pathname=='/clinics' ? '1' : '3']}
           items={[
             {
               key: "1",

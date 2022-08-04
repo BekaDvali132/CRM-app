@@ -39,7 +39,7 @@ const Login = ({ setUser }) => {
         if (res.data.status==='success') {
           setCodeStep(false)
           setShow(false)
-          message.success('თქვენ წარმატებით აღადგინეთ პაროლი')
+          message.success(`თქვენი ახალი პაროლი გამოზავნილია ${values.email}`)
         } else {
           setErrors(res.data.errors)
         }
@@ -117,19 +117,19 @@ const Login = ({ setUser }) => {
 
       <Form layout={"vertical"} onFinish={onFinish} className={"login-form"}>
         <Form.Item
-          label="დასახელება"
-          name="name"
-          validateStatus={errors?.name ? `error` : ""}
+          label="ელ.ფოსტა"
+          name="email"
+          validateStatus={errors?.email ? `error` : ""}
           rules={[
             {
               required: false,
             },
           ]}
-          help={errors?.name}
+          help={errors?.email}
         >
           <Input
-            placeholder="შეიყვანეთ დასახელება"
-            id={errors?.name ? `error` : ""}
+            placeholder="შეიყვანეთ ელ.ფოსტა"
+            id={errors?.email ? `error` : ""}
           />
         </Form.Item>
         <Form.Item

@@ -8,7 +8,7 @@ let transporter = nodemailer.createTransport({
   },
 });
 
-const sendMail = (email, role, name, generatedPassword) => {
+const sendMail = (email, role, name, surname, generatedPassword) => {
   let mailOptions = {
     from: process.env.EMAIL,
     to: email,
@@ -16,7 +16,7 @@ const sendMail = (email, role, name, generatedPassword) => {
     text: `თქვენ გაქვთ მინიჭებული ${
       role == 1 ? "ადმინისტრატორის" : "მენეჯერის"
     } როლი. თქვენი მონაცემებია 
-              დასახელება: ${name} ელ.ფოსტა: ${email} პაროლი: ${generatedPassword}`, // plain text body
+              სახელი: ${name} გვარი: ${surname} ელ.ფოსტა: ${email} პაროლი: ${generatedPassword}`, // plain text body
   };
 
   transporter.sendMail(mailOptions, function (error, info) {

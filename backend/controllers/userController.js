@@ -10,7 +10,7 @@ const { generateExcel } = require("../functions/generateExcel");
 //@route    POST /api/users
 //access    Private
 const registerUser = asyncHandler(async (req, res) => {
-  const { name, email, role } = req.body;
+  const { name, email, role, surname } = req.body;
 
   const errors = {};
 
@@ -18,6 +18,9 @@ const registerUser = asyncHandler(async (req, res) => {
 
   if (!name) {
     errors.name = "გთხოვთ მიუთითოთ სახელი";
+  }
+  if (!surname) {
+    errors.surname = "გთხოვთ მიუთითოთ გვარი";
   }
   if (!email) {
     errors.email = "გთხოვთ მიუთითოთ ელექტრონული ფოსტა";
@@ -44,7 +47,6 @@ const registerUser = asyncHandler(async (req, res) => {
         email: "მომხმარებელი მითითებული მეილით უკვე არსებობს",
       },
     });
-    return;
   }
 
   const userExists = await User.findOne({ name });
@@ -56,7 +58,7 @@ const registerUser = asyncHandler(async (req, res) => {
         name: "მომხმარებელი მითითებული დასახელებით უკვე არსებობს",
       },
     });
-    return;
+
   }
 
   const generatedPassword = Math.random().toString(36).slice(-8);
@@ -68,19 +70,21 @@ const registerUser = asyncHandler(async (req, res) => {
   // Create user
   const user = await User.create({
     name,
+    surname,
     email,
     password: hashedPassword,
     role,
   });
 
   if (user) {
-    sendMail(email, role, name, generatedPassword);
+    sendMail(email, role, name, surname, generatedPassword);
 
     res.status(201).json({
       status: "success",
       data: {
         _id: user.id,
         name: user.name,
+        surname: user.surname,
         email: user.email,
         token: generateToken(user._id),
         password: hashedPassword,
@@ -99,7 +103,7 @@ const registerUser = asyncHandler(async (req, res) => {
 //@route    PUT /api/users/:id
 //access    Private
 const editUser = asyncHandler(async (req, res) => {
-  const { name, email, role, id } = req.body;
+  const { name, email, role, surname, id } = req.body;
 
   const errors = {};
 
@@ -107,6 +111,9 @@ const editUser = asyncHandler(async (req, res) => {
 
   if (!name) {
     errors.name = "გთხოვთ მიუთითოთ სახელი";
+  }
+  if (!surname) {
+    errors.surname = "გთხოვთ მიუთითოთ გვარი";
   }
   if (!email) {
     errors.email = "გთხოვთ მიუთითოთ ელექტრონული ფოსტა";
@@ -116,7 +123,7 @@ const editUser = asyncHandler(async (req, res) => {
   }
 
   if (Object.keys(errors).length > 0) {
-    res.json({
+    res.status(200).json({
       status: "unsuccess",
       errors: errors,
     });
@@ -126,7 +133,7 @@ const editUser = asyncHandler(async (req, res) => {
   // Check if user exists
   const emailExists = await User.find({ email });
 
-  if (emailExists.length > 1 && emailExists[0]._id !== id) {
+  if (emailExists?.length > 0 && emailExists?.[0]?._id != id) {
     res.status(200).json({
       status: "unsuccess",
       errors: {
@@ -153,6 +160,7 @@ const editUser = asyncHandler(async (req, res) => {
     name,
     email,
     role,
+    surname
   });
 
   if (user) {
@@ -163,6 +171,7 @@ const editUser = asyncHandler(async (req, res) => {
       data: {
         _id: user.id,
         name: user.name,
+        surname: user.surname,
         email: user.email,
         token: generateToken(user._id),
       },
@@ -180,19 +189,19 @@ const editUser = asyncHandler(async (req, res) => {
 //@route    POST /api/users/login
 //access    Private
 const loginUser = asyncHandler(async (req, res) => {
-  const { name, password } = req.body;
+  const { email, password } = req.body;
   const errors = {};
 
   // Check if something is missing
 
-  if (!name) {
-    errors.name = "გთხოვთ მიუთითოთ დასახელება";
+  if (!email) {
+    errors.email = "გთხოვთ მიუთითოთ ელ.ფოსტა";
   }
   if (!password) {
     errors.password = "გთხოვთ მიუთითოთ პაროლი";
   }
 
-  if (errors?.name || errors?.password) {
+  if (errors?.email || errors?.password) {
     res.json({
       status: "unsuccess",
       errors: errors,
@@ -201,7 +210,7 @@ const loginUser = asyncHandler(async (req, res) => {
 
   // Find for user and if found, success
 
-  const user = await User.findOne({ name });
+  const user = await User.findOne({ email });
 
   if (user && (await bcrypt.compare(password, user.password))) {
     res.json({

@@ -13,6 +13,11 @@ const columns = [
       key: "name",
     },
     {
+      title: "გვარი",
+      dataIndex: "surname",
+      key: "surname",
+    },
+    {
       title: "მეილი",
       dataIndex: "email",
       key: "email",
@@ -120,6 +125,7 @@ const Users = () => {
             return {
               key: user._id,
               name: user.name,
+              surname: user.surname,
               email: user.email,
               role: roles[user.role-1],
               edit: (
