@@ -18,6 +18,8 @@ const corsOption = {
 const app = express();
 
 app.use(compression())
+app.use(cors({exposedHeaders: '*'})) //and this
+
 
 if (process.env.NODE_ENV !== 'production') {
     app.use(cors(corsOption));

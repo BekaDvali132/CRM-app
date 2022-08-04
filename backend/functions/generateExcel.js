@@ -1,9 +1,9 @@
 // Require library
 var xl = require("excel4node");
 const moment = require("moment");
-const fs = require("fs");
-const util = require("util");
-const fs_writeFile = util.promisify(fs.writeFile);
+// const fs = require("fs");
+// const util = require("util");
+// const fs_writeFile = util.promisify(fs.writeFile);
 const status = [
   "მუშავდება",
   "პოტენციური",
@@ -18,7 +18,6 @@ async function generateExcel(clinics, res) {
 
   // Add Worksheets to the workbook
   var ws = wb.addWorksheet("Sheet 1");
-  var ws2 = wb.addWorksheet("Sheet 2");
 
   // Create a reusable style
   var style = wb.createStyle({
@@ -91,20 +90,22 @@ async function generateExcel(clinics, res) {
       .style(style);
   });
 
-  const buffer = await wb.writeToBuffer();
+  // const buffer = await wb.writeToBuffer();
 
-  fs.unlink("./resources/report.xlsx", async () => {
-    fs_writeFile("./resources/report.xlsx", buffer, function (err) {
-      if (err) {
-        throw err;
-      }
-    }).then(() => {
-      res.status(200).json({
-        status: `success`,
-        data: '/resources/report.xlsx',
-      });
-    });
-  });
+  // fs.unlink("./resources/report.xlsx", async () => {
+  //   fs_writeFile("./resources/report.xlsx", buffer, function (err) {
+  //     if (err) {
+  //       throw err;
+  //     }
+  //   }).then(() => {
+  //     res.status(200).json({
+  //       status: `success`,
+  //       data: JSON.stringify(wb),
+  //     });
+  //   });
+  // });
+
+  wb.write("Report.xlsx", res)
 
   // let result = await wb.writeP("./resources/report.xlsx");
 }
