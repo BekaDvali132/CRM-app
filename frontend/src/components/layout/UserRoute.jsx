@@ -11,7 +11,7 @@ import axios from "axios";
 import React, { useState } from "react";
 import { useEffect } from "react";
 import { useContext } from "react";
-import { Outlet, useLocation, useNavigate, useParams } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import { UserContext } from "../hooks/contexts/UserContext";
 import "./UserRoute.css";
 const { Header, Sider, Content } = Layout;
@@ -20,8 +20,6 @@ const UserRoute = ({setUser}) => {
   const [collapsed, setCollapsed] = useState(true);
   const navigate = useNavigate();
   const user = useContext(UserContext);
-
-  const location = useLocation()
 
   axios.interceptors.request.use(function (config) {
     const bearer = user?.token || localStorage.getItem('token') || '';

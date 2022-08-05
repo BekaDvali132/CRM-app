@@ -10,7 +10,6 @@ import { UserContext } from "../hooks/contexts/UserContext";
 const RecoverPassword = ({setUser}) => {
     const [errors, setErrors] = useState();
   const navigate = useNavigate();
-  const user = useContext(UserContext);
 const {id} = useParams()
 
   const onFinish = (values) => {

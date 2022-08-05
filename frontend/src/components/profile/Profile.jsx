@@ -9,7 +9,6 @@ import { UserContext } from "../hooks/contexts/UserContext";
 
 const Profile = () => {
     const [errors, setErrors] = useState();
-    const [fields, setFields] = useState([]);
     const user = useContext(UserContext);
     const navigate = useNavigate();
     const [form] = Form.useForm()
@@ -26,7 +25,7 @@ const Profile = () => {
         });
       };
 
-      useEffect(() => form.setFieldsValue(user), []);
+      useEffect(() => form.setFieldsValue(user), [user]);
 
   return (
     <Space size={"large"} direction="vertical" style={{ width: "100%" }}>
