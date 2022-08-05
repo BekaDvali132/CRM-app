@@ -136,7 +136,9 @@ const Clinics = () => {
   };
 
   const handleTableChange = (newPagination, filters, sorter) => {
-    getClinics({ field: sorter?.field, order: sorter?.order });
+    if (sorter?.field, sorter?.order) {
+      getClinics({ field: sorter?.field, order: sorter?.order });
+    }
   };
 
   const columns = [

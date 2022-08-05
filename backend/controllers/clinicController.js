@@ -42,13 +42,6 @@ const getClinics = asyncHandler(async (req, res) => {
           $lt: req.query.end_date,
         },
       });
-      res.status(200).json({
-        t: 'hh',
-        status: "success",
-        data: clinics,
-        start: req.query.start_date,
-        end: req.query.end_date
-      });
     } else {
       clinics = await Clinic.find({});
     }
@@ -91,7 +84,8 @@ const setClinic = asyncHandler(async (req, res) => {
     register_date,
     contract_date,
     manager,
-    manager_name
+    manager_name,
+    id
   } = req.body;
 
   const errors = {};
@@ -129,7 +123,7 @@ const setClinic = asyncHandler(async (req, res) => {
 
   const clinicExists = await Clinic.find({ phone_number: phone_number });
 
-  if (clinicExists.length !== 0) {
+  if (clinicExists.length !== 0 && clinicExists._id !==id) {
     errors.phone_number = `კლინიკა მითითებული ტელეფონის ნომრით უკვე არსებობს`;
   }
 

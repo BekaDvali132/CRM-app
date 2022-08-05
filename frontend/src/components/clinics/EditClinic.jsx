@@ -38,8 +38,8 @@ const EditClinic = () => {
   }, []);
 
   const onFinish = (values) => {
-    values.manager = users?.find(user=>user?.name === values.manager_name?.split(' ')[0])?._id;
-    values.id = id;
+    values.manager = users?.find(user=>user?.name === values.manager_name?.split(' ')[0])?._id ?? user.id;
+    values.id = fields._id
     axios.put(`/api/clinics/${id}`, values).then((res) => {
       if (res.data.status === "success") {
         setErrors(null);

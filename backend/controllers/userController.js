@@ -271,7 +271,7 @@ const getUsers = asyncHandler(async (req, res) => {
 
   let users;
 
-  if (role && role.role === 1) {
+  if (role) {
     users = await User.find({});
     res.status(200).send({
       status: "success",
