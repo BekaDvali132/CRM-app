@@ -404,8 +404,6 @@ const submitCode = async (req, res) => {
 
     if (user) {
 
-      const generatedPassword = Math.random().toString(36).slice(-8);
-
     // Hash password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
@@ -420,7 +418,6 @@ const submitCode = async (req, res) => {
 
     if (updatedUser) {
 
-      sendNewPasswordMail(user.email, user.name, generatedPassword);
       verified.remove()
 
       res.status(201).json({
