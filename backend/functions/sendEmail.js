@@ -33,8 +33,8 @@ const sendCodeMail = (email,code) => {
   let mailOptions = {
     from: process.env.EMAIL,
     to: email,
-    subject: "პაროლის აღდგენის კოდი",
-    text: `თქვენი კოდია ${code}`, // plain text body
+    subject: "პაროლის აღდგენის გვერდი",
+    text: `პაროლის აღსადგენად გადადით ბმულზე https://crm-app-scope.herokuapp.com/recover-password/${code}`, // plain text body
   };
 
   transporter.sendMail(mailOptions, function (error, info) {

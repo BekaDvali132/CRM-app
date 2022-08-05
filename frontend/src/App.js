@@ -14,6 +14,7 @@ import { useState } from "react";
 import axios from "axios";
 import PageScroll from "./components/pageScroll/PageScroll";
 import Profile from "./components/profile/Profile";
+import RecoverPassword from "./components/auth/RecoverPassword";
 
 function App() {
   const [user, setUser] = useState()
@@ -28,6 +29,7 @@ function App() {
       <PageScroll/>
         <div className="App">
           <Routes>
+            <Route path="/recover-password/:id" element={<RecoverPassword setUser={setUser}/>} />
             <Route path="/login" element={<Login setUser={setUser}/>} />
             <Route path="/" element={<UserRoute setUser={setUser}/>}>
             <Route path="/" element={<Clinics />}/>

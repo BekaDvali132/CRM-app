@@ -383,19 +383,32 @@ const sendCode = async (req, res) => {
 };
 
 const submitCode = async (req, res) => {
-  const { code, email } = req.body;
+  const { code, password, repeat_password } = req.body;
 
   const verified = await Verify.findOne({ code });
 
-  const user = await User.findOne({email});
+  if (repeat_password !== password) {
 
+    res.status(200).json({
+      status: 'unsuccess',
+      errors: {
+        repeat_password: 'პაროლები უნდა ემთხვეოდეს'
+      }
+    })
+    
+  }
 
-  if (verified && user) {
-    const generatedPassword = Math.random().toString(36).slice(-8);
+  if (verified) {
+
+    const user = await User.findById(verified.user_id);
+
+    if (user) {
+
+      const generatedPassword = Math.random().toString(36).slice(-8);
 
     // Hash password
     const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(generatedPassword, salt);
+    const hashedPassword = await bcrypt.hash(password, salt);
 
     const updatedUser = await User.findByIdAndUpdate(user._id,{
       name:user.name,
@@ -408,6 +421,7 @@ const submitCode = async (req, res) => {
     if (updatedUser) {
 
       sendNewPasswordMail(user.email, user.name, generatedPassword);
+      verified.remove()
 
       res.status(201).json({
         status: "success",
@@ -426,13 +440,23 @@ const submitCode = async (req, res) => {
         message: "მომხმარებლის პაროლი აღდგენა ვერ შესრულდა",
       });
 
+    }
+
+
+    } else {
+
+      res.json({
+        status: "unsuccess",
+        message: "მომხმარებლის პაროლი აღდგენა ვერ შესრულდა",
+      });
+
       return;
 
     }
   } else {
-    res.stauts(200).json({
+    res.status(200).json({
       status: "unsuccess",
-      message: "მომხმარებლის პაროლი აღდგენა ვერ შესრულდა",
+      message: "მომხმარებლის პაროლის აღდგენა ვერ შესრულდა ან არ აქვს აღდგენი უფლება",
     });
   }
 };

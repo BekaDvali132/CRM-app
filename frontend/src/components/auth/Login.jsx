@@ -30,36 +30,18 @@ const Login = ({ setUser }) => {
 
   const restorePassword = (values) => {
 
-    if (codeStep) {
-
-      values.email = email;
-
-      axios.post('/api/users/submit-code', values).then((res) => {
-
-        if (res.data.status==='success') {
-          setCodeStep(false)
-          setShow(false)
-          message.success(`თქვენი ახალი პაროლი გამოზავნილია ${values.email}`)
-        } else {
-          setErrors(res.data.errors)
-        }
-  
-      })  
-      
-    } else {
-
     axios.post('/api/users/send-code', values).then((res) => {
 
       if (res.data.status==='success') {
-        setCodeStep(true)
-        setEmail(values.email)
+        setShow(false)
+        message.success(`პაროლის აღდგენა გამოიგზავნა ${values.email}-ზე`)
+        setErrors(null)
+        form.resetFields()
       } else {
         setErrors(res.data.errors)
       }
 
     })
-
-  }
 
   };
 
@@ -97,19 +79,19 @@ const Login = ({ setUser }) => {
       >
         <Form layout={"vertical"} form={form} onFinish={restorePassword} preserve>
           <Form.Item
-            label={codeStep ? 'სავერიფიკაციო კოდი' : "ელ.ფოსტა"}
-            name={codeStep ? 'code' :"email"}
-            validateStatus={errors?.[codeStep ? 'code' : 'email'] ? `error` : ""}
+            label={"ელ.ფოსტა"}
+            name={"email"}
+            validateStatus={errors?.['email'] ? `error` : ""}
             rules={[
               {
                 required: false,
               },
             ]}
-            help={errors?.[codeStep ? 'code' : 'email']}
+            help={errors?.['email']}
           >
             <Input
-              placeholder={`შეიყვანეთ ${codeStep ? 'ელ.ფოსტაზე მოსული სავერიფიკაციო კოდი' : 'თქვენი ელ.ფოსტა'}`}
-              id={errors?.[codeStep?'code':'email'] ? `error` : ""}
+              placeholder={`შეიყვანეთ თქვენი ელ.ფოსტა`}
+              id={errors?.['email'] && `error`}
             />
           </Form.Item>
         </Form>
